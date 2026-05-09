@@ -92,17 +92,3 @@ for key in ("addonId", "version", "installedAt"):
 print("augmentedAgents=" + ",".join(data.get("augmentedAgents", [])))
 PY
 fi
-
-if [[ -f "$TARGET_DIR/.opencode-ticketing-addon.json" ]]; then
-  printf '\n## Install marker\n'
-  python3 - <<'PY' "$TARGET_DIR/.opencode-ticketing-addon.json"
-import json
-import sys
-from pathlib import Path
-path = Path(sys.argv[1])
-data = json.loads(path.read_text())
-for key in ("addonId", "version", "installedAt"):
-    print(f"{key}={data.get(key)}")
-print("augmentedAgents=" + ",".join(data.get("augmentedAgents", [])))
-PY
-fi
