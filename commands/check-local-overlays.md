@@ -1,6 +1,6 @@
 ---
 description: Audita la capa local .opencode/ de un repo contra la base global usando el helper semiestructurado del stack.
-agent: agent-design
+agent: build
 subtask: false
 ---
 Auditá la capa local `.opencode/` del repo actual.

@@ -1,8 +1,8 @@
 ---
-description: Inicia o reinicia la fase de análisis de un ticket con planner y prepara tmp/<ticket>/ cuando el proyecto usa workflow de tickets.
-agent: planner
+description: Inicia o reinicia la fase de análisis de un ticket con plan y prepara tmp/<ticket> cuando el proyecto usa workflow de tickets.
+agent: plan
 ---
-Analizá el ticket $1 con `planner`.
+Analizá el ticket $1 con `plan`.
 
 Objetivo:
 - iniciar o reiniciar la fase de análisis,

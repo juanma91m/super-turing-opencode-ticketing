@@ -1,6 +1,6 @@
 ---
 description: Inspecciona un proyecto y propone o crea una capa local de agentes/OpenCode especializada sobre la base global.
-agent: agent-design
+agent: build
 subtask: false
 ---
 Inicializá una capa local de agentes/OpenCode para el proyecto ubicado en: `$ARGUMENTS`

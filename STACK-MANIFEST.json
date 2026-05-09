@@ -5,6 +5,8 @@
   "managedFiles": [
     "README.md",
     "STACK-MANIFEST.json",
+    "agents/build.md",
+    "agents/plan.md",
     "commands/check-local-overlays.md",
     "commands/init-project-agent-layer.md",
     "commands/ticket-implement.md",
@@ -17,6 +19,7 @@
     "scripts/install-opencode-ticketing.sh",
     "scripts/jira_api_read.py",
     "scripts/jira_helper.sh",
+    "scripts/manage_agent_autonomy.py",
     "scripts/sync-opencode-ticketing.sh",
     "skills/overlays-locales-opencode/SKILL.md",
     "skills/workflow-ticket-handoff/SKILL.md",

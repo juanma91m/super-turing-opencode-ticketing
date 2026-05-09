@@ -53,6 +53,12 @@ for rel_path in "${MANAGED_FILES[@]}"; do
   run cp "$src" "$dst"
 done
 
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  printf '[dry-run] python3 %s apply --target-dir %s\n' "$SOURCE_DIR/scripts/manage_agent_autonomy.py" "$TARGET_DIR"
+else
+  python3 "$SOURCE_DIR/scripts/manage_agent_autonomy.py" apply --target-dir "$TARGET_DIR"
+fi
+
 if [[ "$DRY_RUN" -eq 0 ]]; then
   printf '[ticketing] install finished\n'
 fi

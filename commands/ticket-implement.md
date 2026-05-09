@@ -1,8 +1,8 @@
 ---
-description: Toma tmp/<ticket>/verdict.md como insumo primario cuando existe y arranca la implementación con master-dev.
-agent: master-dev
+description: Toma tmp/<ticket>/verdict.md como insumo primario cuando existe y arranca la implementación con build.
+agent: build
 ---
-Implementá el ticket $1 usando `master-dev`.
+Implementá el ticket $1 usando `build`.
 
 Objetivo:
 - si existe `tmp/$1/verdict.md`, tomarlo como insumo principal,
