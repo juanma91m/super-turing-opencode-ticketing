@@ -99,13 +99,13 @@ def main() -> int:
     agents_dir = target_dir / "agents"
 
     for agent_name, block in OPTIONAL_AGENT_RULES.items():
-      path = agents_dir / f"{agent_name}.md"
-      if not path.exists():
-          continue
-      if args.command == "apply":
-          apply_to_agent(path, block)
-      else:
-          remove_from_agent(path)
+        path = agents_dir / f"{agent_name}.md"
+        if not path.exists():
+            continue
+        if args.command == "apply":
+            apply_to_agent(path, block)
+        else:
+            remove_from_agent(path)
 
     return 0
 

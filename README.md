@@ -65,3 +65,15 @@ Para sync incremental:
 bash scripts/sync-opencode-ticketing.sh --status
 bash scripts/sync-opencode-ticketing.sh
 ```
+
+Para ver el estado instalado:
+
+```bash
+bash scripts/status.sh
+```
+
+Para desinstalar:
+
+```bash
+bash scripts/uninstall.sh
+```

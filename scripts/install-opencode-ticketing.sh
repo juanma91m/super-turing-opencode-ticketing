@@ -9,6 +9,18 @@ DRY_RUN=0
 
 MANAGED_FILES=()
 
+list_augmented_agents() {
+  local result=()
+  local candidate
+  for candidate in planner master-dev agent-design; do
+    if [[ -f "$TARGET_DIR/agents/$candidate.md" ]] && grep -q 'TICKETING_AUTONOMY_START' "$TARGET_DIR/agents/$candidate.md" 2>/dev/null; then
+      result+=("$candidate")
+    fi
+  done
+  local IFS=,
+  printf '%s' "${result[*]}"
+}
+
 run() {
   if [[ "$DRY_RUN" -eq 1 ]]; then
     printf '[dry-run] %s\n' "$*"
@@ -57,6 +69,10 @@ if [[ "$DRY_RUN" -eq 1 ]]; then
   printf '[dry-run] python3 %s apply --target-dir %s\n' "$SOURCE_DIR/scripts/manage_agent_autonomy.py" "$TARGET_DIR"
 else
   python3 "$SOURCE_DIR/scripts/manage_agent_autonomy.py" apply --target-dir "$TARGET_DIR"
+  python3 "$SOURCE_DIR/scripts/manage_install_marker.py" write \
+    --target-dir "$TARGET_DIR" \
+    --repo-dir "$SOURCE_DIR" \
+    --augmented-agents "$(list_augmented_agents)"
 fi
 
 if [[ "$DRY_RUN" -eq 0 ]]; then
