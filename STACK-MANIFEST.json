@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "name": "super-turing-opencode-ticketing",
+  "version": "0.1.0",
+  "managedFiles": [
+    "README.md",
+    "STACK-MANIFEST.json",
+    "commands/check-local-overlays.md",
+    "commands/init-project-agent-layer.md",
+    "commands/ticket-implement.md",
+    "commands/ticket-plan.md",
+    "commands/ticket-refresh.md",
+    "commands/ticket-validate.md",
+    "commands/ticket-verdict.md",
+    "scripts/check_local_overlays.py",
+    "scripts/check_local_overlays.sh",
+    "scripts/install-opencode-ticketing.sh",
+    "scripts/jira_api_read.py",
+    "scripts/jira_helper.sh",
+    "scripts/sync-opencode-ticketing.sh",
+    "skills/overlays-locales-opencode/SKILL.md",
+    "skills/workflow-ticket-handoff/SKILL.md",
+    "plugins/ticketing-coupling.ts",
+    "CONTEXT7-TECH-CATALOG.md",
+    "LOCAL-OVERLAY-TEMPLATE.md",
+    "PLAYBOOK-LOCAL-OVERLAYS.md"
+  ]
+}
