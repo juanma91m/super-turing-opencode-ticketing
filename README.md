@@ -1,5 +1,7 @@
 # super-turing-opencode-ticketing
 
+Portable OpenCode addon for Jira, ticket workflows, and project-specific scaffolding, with automatic coupling for `plan` / `build` and optional augmentation for `planner` / `master-dev` / `agent-design`.
+
 Extensión separada del stack base `super-turing-opencode` para todo lo relativo a:
 
 - Jira,
