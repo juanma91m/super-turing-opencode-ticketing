@@ -5,7 +5,21 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-OPTIONAL_AGENT_RULES = {
+AGENT_RULES = {
+    "plan": """
+## Ticketing autonomy (addon)
+- si el proyecto usa un handoff o workflow explícito de tickets, respetalo,
+- si el proyecto usa el patrón canónico `tmp/<ticket>/verdict.md`, usalo solo cuando ese workflow esté habilitado en el repo,
+- si existen helpers o wrappers aprobados para Jira/tickets, podés usarlos; si no, no los asumas,
+- si el proyecto no usa workflow de tickets, no fuerces `tmp/` ni artefactos de handoff.
+""".strip(),
+    "build": """
+## Ticketing autonomy (addon)
+- si existe un handoff canónico del proyecto, usalo como insumo primario antes de explorar de más,
+- si el proyecto usa el patrón `tmp/<ticket>/result-dev.md`, escribilo solo cuando ese workflow esté habilitado,
+- si el usuario pide scaffolding de una capa local o proyecto específico y existen assets del addon, preferí esos assets antes de inventar una estructura nueva,
+- si no hay workflow de tickets en el proyecto, no fuerces artefactos ni rutas `tmp/`.
+""".strip(),
     "planner": """
 ## Ticketing autonomy (addon)
 - si el proyecto usa workflow de tickets, respetá su handoff antes de inventar notas ad-hoc,
@@ -98,7 +112,7 @@ def main() -> int:
     target_dir = Path(args.target_dir).expanduser()
     agents_dir = target_dir / "agents"
 
-    for agent_name, block in OPTIONAL_AGENT_RULES.items():
+    for agent_name, block in AGENT_RULES.items():
         path = agents_dir / f"{agent_name}.md"
         if not path.exists():
             continue

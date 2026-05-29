@@ -40,6 +40,19 @@ PY
   )
 }
 
+ensure_primary_agent_templates() {
+  local rel_path src dst
+  for rel_path in agents/plan.md agents/build.md; do
+    src="$SOURCE_DIR/$rel_path"
+    dst="$TARGET_DIR/$rel_path"
+    if [[ -e "$dst" ]]; then
+      continue
+    fi
+    run mkdir -p "$(dirname "$dst")"
+    run cp "$src" "$dst"
+  done
+}
+
 while [[ "$#" -gt 0 ]]; do
   case "$1" in
     --target-dir)
@@ -64,6 +77,8 @@ for rel_path in "${MANAGED_FILES[@]}"; do
   run mkdir -p "$(dirname "$dst")"
   run cp "$src" "$dst"
 done
+
+ensure_primary_agent_templates
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
   printf '[dry-run] python3 %s apply --target-dir %s\n' "$SOURCE_DIR/scripts/manage_agent_autonomy.py" "$TARGET_DIR"
