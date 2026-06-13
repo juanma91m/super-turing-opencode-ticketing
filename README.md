@@ -17,6 +17,7 @@ Extensión separada del stack base `super-turing-opencode` para todo lo relativo
 - plugin de acoplamiento `plugins/ticketing-coupling.ts` para que `plan`/`planner` y `build`/`master-dev`/`agent-design` usen el workflow cuando el addon esté instalado
 - overlays directos para `agents/plan.md` y `agents/build.md`
 - patch aditivo sobre `planner`, `master-dev` y `agent-design` si existen en la instalación activa
+- marker de instalación con metadatos suficientes para que el stack base pueda recomponer agentes aditivos sin absorber lógica del addon
 - assets de templating/local overlays:
   - `CONTEXT7-TECH-CATALOG.md`
   - `LOCAL-OVERLAY-TEMPLATE.md`

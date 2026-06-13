@@ -3,6 +3,7 @@ description: Implementador base reforzado por super-turing-opencode-ticketing cu
 mode: primary
 model: openai/gpt-5.4
 variant: xhigh
+hidden: true
 permission:
   edit: allow
   bash:

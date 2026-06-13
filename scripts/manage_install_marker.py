@@ -36,6 +36,8 @@ def write_marker(args: argparse.Namespace) -> None:
         "addonId": manifest["name"],
         "version": manifest["version"],
         "installedAt": utc_now(),
+        "repoDir": str(repo_dir),
+        "autonomyScript": "scripts/manage_agent_autonomy.py",
         "augmentedAgents": [item for item in args.augmented_agents.split(",") if item],
     }
     marker_path.write_text(json.dumps(data, indent=2) + "\n")
