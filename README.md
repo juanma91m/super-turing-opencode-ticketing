@@ -8,6 +8,7 @@ Extensión separada del stack base `super-turing-opencode` para todo lo relativo
 - workflows de tickets,
 - handoffs tipo `verdict.md` / `result-dev.md`,
 - templating y scaffolding de capas locales por proyecto.
+- descubrimiento opcional del addon global CodeGraph durante el bootstrap de proyectos, sin absorber su runtime ni lifecycle.
 
 ## Qué concentra
 
@@ -27,6 +28,8 @@ Extensión separada del stack base `super-turing-opencode` para todo lo relativo
   - `scripts/check_local_overlays.sh`
   - `scripts/check_local_overlays.py`
   - `skills/overlays-locales-opencode/SKILL.md`
+
+Cuando `super-turing-opencode-codegraph` está instalado, `init-project-agent-layer` puede ofrecer la inicialización adoptiva del índice machine-local del repo. Ticketing conserva el ownership del generador; CodeGraph conserva el ownership de sus wrappers, MCP, runtime e índices.
 
 ## Objetivo
 
