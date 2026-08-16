@@ -62,8 +62,12 @@ Además, los scripts del addon aplican una capa de autonomía mínima:
 Este repo incluye un mini bundle portable. Para instalarlo sobre `~/.config/opencode`:
 
 ```bash
-bash scripts/install-opencode-ticketing.sh
+bash scripts/install.sh
 ```
+
+`scripts/install.sh` es el contrato estable usado por el instalador completo de
+`super-turing-opencode`; delega al lifecycle interno del addon. El entrypoint
+histórico `scripts/install-opencode-ticketing.sh` se conserva por compatibilidad.
 
 Para sync incremental:
 

@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-08-16
+
+### Added
+
+- `scripts/install.sh` como contrato estable para orquestadores de distribución; delega al lifecycle interno sin duplicarlo.
+
 ## [0.1.1] - 2026-08-15
 
 ### Changed
