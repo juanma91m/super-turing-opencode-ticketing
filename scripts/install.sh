@@ -20,4 +20,5 @@ fi
 
 # Stable distribution contract. The addon keeps ownership of its internal
 # installer and may change that implementation without changing callers.
+bash "$SCRIPT_DIR/preflight.sh"
 exec bash "$SCRIPT_DIR/install-opencode-ticketing.sh" "$@"

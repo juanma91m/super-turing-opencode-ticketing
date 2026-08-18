@@ -13,10 +13,12 @@ Esta guía documenta el flujo soportado del addon `super-turing-opencode-ticketi
 
 ## Instalación rápida
 
+Requisito de bootstrap: `python3`.
+
 ```bash
 git clone git@github-juanma91m-v2:juanma91m/super-turing-opencode-ticketing.git
 cd super-turing-opencode-ticketing
-bash scripts/install-opencode-ticketing.sh
+bash scripts/install.sh
 ```
 
 ## Sync incremental

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- `scripts/preflight.sh` valida Python antes de que la distribución modifique el target.
+
 ## [0.1.2] - 2026-08-16
 
 ### Added
