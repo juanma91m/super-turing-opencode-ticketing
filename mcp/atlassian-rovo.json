@@ -1,0 +1,11 @@
+{
+  "atlassian-rovo": {
+    "type": "remote",
+    "url": "https://mcp.atlassian.com/v1/mcp/authv2",
+    "enabled": true,
+    "oauth": {
+      "scope": "read:me read:account read:jira-work search:jira-work read:page:confluence read:hierarchical-content:confluence read:comment:confluence read:space:confluence search:confluence search:rovo:mcp"
+    },
+    "timeout": 30000
+  }
+}

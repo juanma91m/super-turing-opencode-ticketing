@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- `mcp/atlassian-rovo.json`: MCP remoto de Jira/Confluence (Atlassian Rovo, OAuth, search/fetch read-only) — se mergea en la clave `mcp` global de `~/.config/opencode/opencode.json`. Antes vivía solo en el deploy de una máquina puntual, sin versionar en ningún repo; queda acá porque es integración Atlassian/Jira, el dominio de este addon.
 - `scripts/preflight.sh` valida Python antes de que la distribución modifique el target.
 
 ## [0.1.2] - 2026-08-16

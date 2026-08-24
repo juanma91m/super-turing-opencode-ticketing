@@ -12,8 +12,9 @@ Extensión separada del stack base `super-turing-opencode` para todo lo relativo
 
 ## Qué concentra
 
-- comandos `/ticket-*`
-- helpers de Jira (`jira_helper.sh`, `jira_api_read.py`)
+- comandos `/ticket-*` (ownership de los `/ticket-plan|refresh|verdict|implement|validate|code-review` genéricos vive en `opencode-stack`, este addon solo aporta los helpers de Jira que consumen)
+- helpers de Jira (`jira_helper.sh`, `jira_api_read.py`) — REST API, 100% lectura contra Jira; la escritura es local, sandboxeada a `tmp/<ticket>/`
+- MCP `atlassian-rovo` (`mcp/atlassian-rovo.json`, remoto vía OAuth, search/fetch read-only sobre Jira/Confluence) — se mergea en la clave `mcp` global de `~/.config/opencode/opencode.json`
 - skill `workflow-ticket-handoff`
 - plugin de acoplamiento `plugins/ticketing-coupling.ts` para que `plan`/`planner` y `build`/`master-dev`/`agent-design` usen el workflow cuando el addon esté instalado
 - overlays directos para `agents/plan.md` y `agents/build.md`

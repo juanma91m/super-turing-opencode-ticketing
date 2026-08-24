@@ -20,5 +20,11 @@
     "CONTEXT7-TECH-CATALOG.md",
     "LOCAL-OVERLAY-TEMPLATE.md",
     "PLAYBOOK-LOCAL-OVERLAYS.md"
-  ]
+  ],
+  "mcpConfig": {
+    "reason": "No son archivos copiados verbatim: su contenido se mergea en la clave 'mcp' de ~/.config/opencode/opencode.json (global). Documentados acá para no quedar sin versionar.",
+    "servers": {
+      "atlassian-rovo": "mcp/atlassian-rovo.json"
+    }
+  }
 }
