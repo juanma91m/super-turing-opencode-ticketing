@@ -21,6 +21,11 @@
   - `Causa / Hipótesis vigente`
   - `Solución propuesta`
   - `Validación esperada`
+- si aporta claridad, también puede incluir:
+  - `Criterios de aceptación`
+  - `Escenarios clave`
+  - `Estrategia de validación`
+- esos bloques extra son opcionales: no forzar SDD/BDD formal en tickets triviales.
 - El implementador debe leer primero `verdict.md` y luego solo la evidencia referenciada o estrictamente necesaria.
 - Si el proyecto usa contexto auxiliar, `repo_findings.md` y `analysis.md` son apoyo; no reemplazan a `verdict.md`.
 - Al terminar la implementacion, el implementador debe dejar `tmp/<ticket>/result-dev.md` con al menos:
@@ -28,6 +33,7 @@
   - `Deuda técnica detectada`
   - `Riesgos / impacto`
   - `Validaciones manuales recomendadas`
+- cuando existan criterios o escenarios previos, conviene además dejar qué quedó cubierto, desviado o pendiente.
 - El validador tecnico corre al final; no redefine el plan.
 
 ## Orden recomendado de lectura para implementacion

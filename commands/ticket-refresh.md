@@ -1,6 +1,6 @@
 ---
 description: Refresca el análisis de un ticket y limpia/actualiza tmp/<ticket>/ con evidencia vigente.
-agent: plan
+agent: planner
 ---
 Refrescá el análisis del ticket $1.
 

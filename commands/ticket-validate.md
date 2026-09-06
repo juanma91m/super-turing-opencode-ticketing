@@ -8,6 +8,7 @@ Validá técnicamente el ticket $1 con `dev-test`.
 Objetivo:
 - ejecutar la secuencia de validación correcta para este repo,
 - dejar evidencia clara de validación,
+- reportar qué criterios o escenarios quedaron efectivamente validados cuando existan,
 - informar fallos reproducibles o pendientes,
 - no cerrar con validación incompleta sin aclararlo.
 

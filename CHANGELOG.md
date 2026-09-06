@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- El addon pasa a ser el único dueño canónico de Jira, `/ticket-*`, `workflow-ticket-handoff` y los helpers asociados.
+- `ticket-code-review` se incorpora al manifest del addon.
+- Scaffolding y auditoría de overlays, templates, catálogo Context7 y su playbook salen del addon y vuelven al core `opencode-stack`.
+- Los comandos conservan los roles custom `planner`, `master-dev`, `dev-test` y `code-reviewer` del stack del usuario.
+- Se retira `ticketing-coupling.ts`: duplicaba en runtime reglas ya presentes en los overlays/augments instalados.
+- Ticketing deja de augmentar `agent-design`; ese rol obtiene las reglas de scaffolding desde el core.
+- El instalador pasa a ser dueño efectivo del wiring de Atlassian Rovo y aplica deny-by-default a `atlassian-rovo_*`, habilitando en `planner` solo las cuatro tools read-only observadas en uso real.
+
 - `mcp/atlassian-rovo.json`: MCP remoto de Jira/Confluence (Atlassian Rovo, OAuth, search/fetch read-only) — se mergea en la clave `mcp` global de `~/.config/opencode/opencode.json`. Antes vivía solo en el deploy de una máquina puntual, sin versionar en ningún repo; queda acá porque es integración Atlassian/Jira, el dominio de este addon.
 - `scripts/preflight.sh` valida Python antes de que la distribución modifique el target.
 

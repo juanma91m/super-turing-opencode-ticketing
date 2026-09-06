@@ -1,5 +1,5 @@
 ---
-description: Planner base reforzado por super-turing-opencode-ticketing cuando el proyecto usa workflow de tickets o scaffolding específico.
+description: Planner base reforzado por super-turing-opencode-ticketing cuando el proyecto usa workflow de tickets.
 mode: primary
 model: openai/gpt-5.6-sol
 variant: high

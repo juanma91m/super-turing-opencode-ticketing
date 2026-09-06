@@ -1,8 +1,8 @@
 ---
-description: Toma tmp/<ticket>/verdict.md como insumo primario cuando existe y arranca la implementación con build.
-agent: build
+description: Toma tmp/<ticket>/verdict.md como insumo primario cuando existe y arranca la implementación con master-dev.
+agent: master-dev
 ---
-Implementá el ticket $1 usando `build`.
+Implementá el ticket $1 usando `master-dev`.
 
 Objetivo:
 - si existe `tmp/$1/verdict.md`, tomarlo como insumo principal,
@@ -11,7 +11,8 @@ Objetivo:
 - verificar que el veredicto siga siendo válido frente al código real,
 - implementar el cambio mínimo suficiente,
 - reportar riesgos o desvíos si aparecen,
-- dejar `tmp/$1/result-dev.md` al finalizar cuando el proyecto use ese patrón.
+- dejar `tmp/$1/result-dev.md` al finalizar cuando el proyecto use ese patrón,
+- si existían criterios o escenarios previos, indicar qué quedó cubierto o pendiente.
 
 Reglas:
 - si el proyecto usa `verdict.md` y falta o está incompleto, frená y explicitá qué falta,

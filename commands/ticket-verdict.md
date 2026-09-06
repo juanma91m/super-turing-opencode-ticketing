@@ -1,6 +1,6 @@
 ---
 description: Consolida el veredicto final de planning en tmp/<ticket>/verdict.md cuando el proyecto usa workflow de tickets.
-agent: plan
+agent: planner
 ---
 Consolidá el `verdict.md` del ticket $1.
 

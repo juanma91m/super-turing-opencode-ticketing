@@ -1,14 +1,15 @@
 ---
-description: Inicia o reinicia la fase de análisis de un ticket con plan y prepara tmp/<ticket> cuando el proyecto usa workflow de tickets.
-agent: plan
+description: Inicia o reinicia la fase de análisis de un ticket con planner y prepara tmp/<ticket>/ cuando el proyecto usa workflow de tickets.
+agent: planner
 ---
-Analizá el ticket $1 con `plan`.
+Analizá el ticket $1 con `planner`.
 
 Objetivo:
 - iniciar o reiniciar la fase de análisis,
 - si el proyecto usa Jira y workspace temporal, crear o actualizar `tmp/$1/`,
 - usar helper de Jira o helper local del proyecto si está disponible y aprobado,
-- identificar problema/objetivo, alcance, estado actual, primeras hipótesis, preguntas abiertas y evidencias iniciales.
+- identificar problema/objetivo, alcance, estado actual, primeras hipótesis, preguntas abiertas y evidencias iniciales,
+- cuando aporte claridad, bajar además criterios de aceptación, escenarios clave y estrategia de validación sin forzar formalismo.
 
 Reglas:
 - no implementes código,

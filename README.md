@@ -1,40 +1,30 @@
 # super-turing-opencode-ticketing
 
-Portable OpenCode addon for Jira, ticket workflows, and project-specific scaffolding, extending `super-turing-opencode` with automatic `plan` / `build` coupling and optional `planner` / `master-dev` / `agent-design` augmentation.
+Portable OpenCode addon for Jira and ticket workflows, extending `super-turing-opencode` with commands, helpers and optional agent augmentation.
 
 Extensión separada del stack base `super-turing-opencode` para todo lo relativo a:
 
 - Jira,
 - workflows de tickets,
-- handoffs tipo `verdict.md` / `result-dev.md`,
-- templating y scaffolding de capas locales por proyecto.
-- descubrimiento opcional del addon global CodeGraph durante el bootstrap de proyectos, sin absorber su runtime ni lifecycle.
+- handoffs tipo `verdict.md` / `result-dev.md`.
 
 ## Qué concentra
 
-- comandos `/ticket-*` (ownership de los `/ticket-plan|refresh|verdict|implement|validate|code-review` genéricos vive en `opencode-stack`, este addon solo aporta los helpers de Jira que consumen)
+- comandos `/ticket-plan|refresh|verdict|implement|validate|code-review`
 - helpers de Jira (`jira_helper.sh`, `jira_api_read.py`) — REST API, 100% lectura contra Jira; la escritura es local, sandboxeada a `tmp/<ticket>/`
-- MCP `atlassian-rovo` (`mcp/atlassian-rovo.json`, remoto vía OAuth, search/fetch read-only sobre Jira/Confluence) — se mergea en la clave `mcp` global de `~/.config/opencode/opencode.json`
+- MCP `atlassian-rovo` (`mcp/atlassian-rovo.json`, remoto vía OAuth) — el instalador lo mergea en `~/.config/opencode/opencode.json`, oculta globalmente `atlassian-rovo_*` y habilita para `planner` solo search/fetch y las lecturas puntuales de Jira/Confluence
 - skill `workflow-ticket-handoff`
-- plugin de acoplamiento `plugins/ticketing-coupling.ts` para que `plan`/`planner` y `build`/`master-dev`/`agent-design` usen el workflow cuando el addon esté instalado
 - overlays directos para `agents/plan.md` y `agents/build.md`
-- patch aditivo sobre `planner`, `master-dev` y `agent-design` si existen en la instalación activa
+- patch aditivo sobre `planner` y `master-dev` si existen en la instalación activa
 - marker de instalación con metadatos suficientes para que el stack base pueda recomponer agentes aditivos sin absorber lógica del addon
-- assets de templating/local overlays:
-  - `CONTEXT7-TECH-CATALOG.md`
-  - `LOCAL-OVERLAY-TEMPLATE.md`
-  - `PLAYBOOK-LOCAL-OVERLAYS.md`
-  - `commands/init-project-agent-layer.md`
-  - `commands/check-local-overlays.md`
-  - `scripts/check_local_overlays.sh`
-  - `scripts/check_local_overlays.py`
-  - `skills/overlays-locales-opencode/SKILL.md`
 
-Cuando `super-turing-opencode-codegraph` está instalado, `init-project-agent-layer` puede ofrecer la inicialización adoptiva del índice machine-local del repo. Ticketing conserva el ownership del generador; CodeGraph conserva el ownership de sus wrappers, MCP, runtime e índices.
+El scaffolding y la auditoría de overlays locales pertenecen al core
+`opencode-stack`. CodeGraph conserva el ownership de sus wrappers, MCP, runtime
+e índices.
 
 ## Objetivo
 
-Mantener el stack base más genérico y reusable, dejando fuera de él los workflows y plantillas que solo aplican cuando un proyecto adopta Jira, handoffs por ticket o scaffolding de capas locales específicas.
+Mantener el stack base genérico y reusable, dejando fuera de él Jira y los workflows que solo aplican cuando un proyecto adopta handoffs por ticket.
 
 ## Acoplamiento de agentes
 
@@ -42,21 +32,22 @@ El addon está pensado para funcionar sin depender de skills manuales extra:
 
 - `plan` siempre recibe la guía base del workflow de tickets.
 - Si existe `planner`, también recibe esa misma guía.
-- `build` siempre recibe la guía de implementación + templating.
-- Si existen `master-dev` y `agent-design`, también reciben esa misma guía.
+- `build` siempre recibe la guía de implementación.
+- Si existe `master-dev`, también recibe esa misma guía.
 
 Los comandos del addon siguen la misma política de fallback:
 
 - planning/handoff usa `plan` como agente guaranteed,
-- implementación y templating usan `build` como agente guaranteed,
-- `planner`, `master-dev` y `agent-design` quedan como augment opcional cuando existen en la instalación activa.
+- implementación usa `build` como agente guaranteed,
+- `planner` y `master-dev` quedan como augment opcional cuando existen en la instalación activa.
 
-Ese acoplamiento se inyecta desde `plugins/ticketing-coupling.ts` vía `experimental.chat.system.transform`.
-
-Además, los scripts del addon aplican una capa de autonomía mínima:
+Los scripts del addon aplican una capa de autonomía mínima:
 
 - siempre instalan overlays para `plan` y `build`,
-- y si en la instalación activa existen `planner`, `master-dev` o `agent-design`, les agregan un bloque aditivo con el contexto del workflow de tickets y templating.
+- y si en la instalación activa existen `planner` o `master-dev`, les agregan un bloque aditivo con el contexto del workflow de tickets.
+
+El plugin runtime `ticketing-coupling.ts` fue retirado porque duplicaba esas
+mismas reglas en cada turno.
 
 ## Instalación rápida
 

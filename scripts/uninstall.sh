@@ -7,6 +7,7 @@ REPO_DIR="$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)"
 TARGET_DIR="${HOME}/.config/opencode"
 DRY_RUN=0
 MANAGED_FILES=()
+OBSOLETE_TARGETS=()
 
 usage() {
   cat <<'EOF'
@@ -28,6 +29,17 @@ import sys
 path = pathlib.Path(sys.argv[1])
 data = json.loads(path.read_text())
 for item in data.get("managedFiles", []):
+    print(item)
+PY
+  )
+}
+
+load_obsolete_targets() {
+  mapfile -t OBSOLETE_TARGETS < <(
+    python3 - "$REPO_DIR/STACK-MANIFEST.json" <<'PY'
+import json, pathlib, sys
+data = json.loads(pathlib.Path(sys.argv[1]).read_text())
+for item in data.get("obsoleteTargets", []):
     print(item)
 PY
   )
@@ -64,10 +76,18 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 load_managed_files
+load_obsolete_targets
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
+  python3 "$REPO_DIR/scripts/configure_ticketing.py" uninstall \
+    --config "$TARGET_DIR/opencode.json" \
+    --mcp-fragment "$REPO_DIR/mcp/atlassian-rovo.json" \
+    --dry-run
   printf '[dry-run] python3 %s remove --target-dir %s\n' "$REPO_DIR/scripts/manage_agent_autonomy.py" "$TARGET_DIR"
 else
+  python3 "$REPO_DIR/scripts/configure_ticketing.py" uninstall \
+    --config "$TARGET_DIR/opencode.json" \
+    --mcp-fragment "$REPO_DIR/mcp/atlassian-rovo.json"
   python3 "$REPO_DIR/scripts/manage_agent_autonomy.py" remove --target-dir "$TARGET_DIR"
   python3 "$REPO_DIR/scripts/manage_install_marker.py" remove --target-dir "$TARGET_DIR"
 fi
@@ -78,6 +98,14 @@ for rel_path in "${MANAGED_FILES[@]}"; do
     continue
   fi
   run rm -f "$dst"
+done
+
+
+for rel_path in "${OBSOLETE_TARGETS[@]}"; do
+  dst="$TARGET_DIR/$rel_path"
+  if [[ -e "$dst" ]]; then
+    run rm -f "$dst"
+  fi
 done
 
 if [[ "$DRY_RUN" -eq 0 ]]; then

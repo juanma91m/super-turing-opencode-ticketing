@@ -5,11 +5,10 @@ Esta guía documenta el flujo soportado del addon `super-turing-opencode-ticketi
 ## Qué instala
 
 - assets de Jira y workflow de tickets,
-- assets de templating/scaffolding de capas locales,
-- un plugin de coupling para que `plan` y `build` usen el addon siempre,
+- comandos y helpers de workflow por tickets,
 - overlays directos para `agents/plan.md` y `agents/build.md`,
-- augment opcional sobre `planner`, `master-dev` y `agent-design` si existen en la instalación activa.
-- detección opcional de `super-turing-opencode-codegraph` desde el generador de proyectos, sin convertirlo en dependencia obligatoria.
+- augment opcional sobre `planner` y `master-dev` si existen en la instalación activa,
+- wiring de Atlassian Rovo con exposición read-only mínima para `planner`.
 
 ## Instalación rápida
 
@@ -36,14 +35,20 @@ bash scripts/status.sh
 
 Esperado si quedó bien instalado:
 
-- `ticketing_coupling_plugin_present=yes`
-- `plan_ticketing_overlay_present=yes`
-- `build_ticketing_overlay_present=yes`
+- `obsolete_ticketing_coupling_plugin_present=no`
+- `plan_ticketing_guidance_present=yes`
+- `build_ticketing_guidance_present=yes`
 - `planner_ticketing_augmented=yes|no` según exista
 - `master_dev_ticketing_augmented=yes|no` según exista
-- `agent_design_ticketing_augmented=yes|no` según exista
+- `atlassian_rovo_globally_hidden=yes`
+- `planner_rovo_read_tools_only=yes`
 
-Si además está instalado `super-turing-opencode-codegraph`, `/init-project-agent-layer` ofrecerá ejecutar su wrapper global para inicializar o adoptar `.codegraph/`. El addon ticketing no instala CodeGraph ni administra sus índices.
+El scaffolding de overlays y la integración opcional con CodeGraph pertenecen
+al core `opencode-stack`; este addon no instala CodeGraph ni administra sus índices.
+
+El MCP queda registrado para OAuth, pero sus tools se ocultan globalmente.
+`planner` recibe únicamente `search`, `fetch`, `getJiraIssue` y
+`getConfluencePage`; las operaciones de escritura no se exponen al modelo.
 
 ## Desinstalación
 
@@ -54,5 +59,6 @@ bash scripts/uninstall.sh
 Esto:
 
 - remueve los assets administrados,
-- saca los bloques de autonomía opcional en `planner`, `master-dev` y `agent-design`,
+- saca los bloques de autonomía opcional en `planner` y `master-dev`,
+- retira el wiring MCP/tools de Ticketing cuando sigue coincidiendo con el fragmento administrado,
 - remueve el marker `.opencode-ticketing-addon.json`.
