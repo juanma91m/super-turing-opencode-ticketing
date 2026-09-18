@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Se agrega `ticket-session-title.ts` para nombrar automáticamente análisis de `planner` y reviews de `code-reviewer` sin pisar títulos manuales ni sesiones hijas.
+- Se corrige el arranque de OpenCode: el archivo autodetectado del plugin vuelve a exponer únicamente la factory `default`; los helpers se mueven fuera de `plugins/` porque el loader interpreta cada export como un plugin.
 - El addon pasa a ser el único dueño canónico de Jira, `/ticket-*`, `workflow-ticket-handoff` y los helpers asociados.
 - `ticket-code-review` se incorpora al manifest del addon.
 - Scaffolding y auditoría de overlays, templates, catálogo Context7 y su playbook salen del addon y vuelven al core `opencode-stack`.

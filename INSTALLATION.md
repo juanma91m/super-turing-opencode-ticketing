@@ -6,6 +6,7 @@ Esta guía documenta el flujo soportado del addon `super-turing-opencode-ticketi
 
 - assets de Jira y workflow de tickets,
 - comandos y helpers de workflow por tickets,
+- plugin de naming automático para sesiones de `planner` y `code-reviewer`,
 - overlays directos para `agents/plan.md` y `agents/build.md`,
 - augment opcional sobre `planner` y `master-dev` si existen en la instalación activa,
 - wiring de Atlassian Rovo con exposición read-only mínima para `planner`.
@@ -36,6 +37,7 @@ bash scripts/status.sh
 Esperado si quedó bien instalado:
 
 - `obsolete_ticketing_coupling_plugin_present=no`
+- `ticket_session_title_plugin_present=yes`
 - `plan_ticketing_guidance_present=yes`
 - `build_ticketing_guidance_present=yes`
 - `planner_ticketing_augmented=yes|no` según exista

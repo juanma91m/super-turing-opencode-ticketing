@@ -11,6 +11,7 @@ Extensión separada del stack base `super-turing-opencode` para todo lo relativo
 ## Qué concentra
 
 - comandos `/ticket-plan|refresh|verdict|implement|validate|code-review`
+- naming automático de sesiones para análisis con `planner` y reviews con `code-reviewer` (`plugins/ticket-session-title.ts`)
 - helpers de Jira (`jira_helper.sh`, `jira_api_read.py`) — REST API, 100% lectura contra Jira; la escritura es local, sandboxeada a `tmp/<ticket>/`
 - MCP `atlassian-rovo` (`mcp/atlassian-rovo.json`, remoto vía OAuth) — el instalador lo mergea en `~/.config/opencode/opencode.json`, oculta globalmente `atlassian-rovo_*` y habilita para `planner` solo search/fetch y las lecturas puntuales de Jira/Confluence
 - skill `workflow-ticket-handoff`
@@ -48,6 +49,19 @@ Los scripts del addon aplican una capa de autonomía mínima:
 
 El plugin runtime `ticketing-coupling.ts` fue retirado porque duplicaba esas
 mismas reglas en cada turno.
+
+## Títulos de sesión
+
+El plugin `ticket-session-title.ts` nombra sesiones principales todavía sin
+título manual:
+
+- `planner`: `Análisis <TICKET> <breve descripción>` o `Análisis <breve descripción>`;
+- `code-reviewer` con link/numero de PR: `Review PR <NUM_PR> - <TICKET>`;
+- `code-reviewer` con ramas: `Review PR <DESTINO> <- <ORIGEN> - <TICKET>`.
+
+El sufijo de ticket se omite si no fue informado o si alguna rama ya lo
+contiene. El plugin no renombra sesiones hijas ni pisa títulos manuales y su
+fallo nunca bloquea el prompt.
 
 ## Instalación rápida
 
