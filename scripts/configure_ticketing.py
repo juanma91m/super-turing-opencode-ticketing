@@ -10,9 +10,13 @@ from pathlib import Path
 SERVER = "atlassian-rovo"
 GLOBAL_TOOL_PATTERN = "atlassian-rovo_*"
 PLANNER_READ_TOOLS = (
+    "atlassian-rovo_getAccessibleAtlassianResources",
     "atlassian-rovo_search",
-    "atlassian-rovo_fetch",
     "atlassian-rovo_getJiraIssue",
+    "atlassian-rovo_getConfluenceContent",
+)
+LEGACY_PLANNER_READ_TOOLS = (
+    "atlassian-rovo_fetch",
     "atlassian-rovo_getConfluencePage",
 )
 
@@ -36,6 +40,9 @@ def install(config: dict, fragment: dict) -> None:
 
     planner = config.setdefault("agent", {}).setdefault("planner", {})
     planner_tools = planner.setdefault("tools", {})
+    for tool_name in LEGACY_PLANNER_READ_TOOLS:
+        if planner_tools.get(tool_name) is True:
+            planner_tools.pop(tool_name, None)
     for tool_name in PLANNER_READ_TOOLS:
         planner_tools[tool_name] = True
 
@@ -56,7 +63,7 @@ def uninstall(config: dict, fragment: dict) -> None:
     planner = (config.get("agent") or {}).get("planner")
     planner_tools = planner.get("tools") if isinstance(planner, dict) else None
     if isinstance(planner_tools, dict):
-        for tool_name in PLANNER_READ_TOOLS:
+        for tool_name in (*PLANNER_READ_TOOLS, *LEGACY_PLANNER_READ_TOOLS):
             if planner_tools.get(tool_name) is True:
                 planner_tools.pop(tool_name, None)
         if not planner_tools:
@@ -64,7 +71,7 @@ def uninstall(config: dict, fragment: dict) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Configure Ticketing MCP and read-only tool exposure")
+    parser = argparse.ArgumentParser(description="Configure Atlassian MCP v2 and least-privilege tool exposure")
     parser.add_argument("command", choices=("install", "uninstall"))
     parser.add_argument("--config", required=True)
     parser.add_argument("--mcp-fragment", required=True)

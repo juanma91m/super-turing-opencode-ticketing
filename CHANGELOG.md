@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+- Se migra Atlassian Rovo MCP de v1 a v2 y se reemplazan las tools de lectura
+  obsoletas de `planner` por `getAccessibleAtlassianResources`, `search`,
+  `getJiraIssue` y `getConfluenceContent`.
+- Se incorpora el scope v2 `write:confluence:agent-interface` sin exposición
+  global: solo agentes consumidores con allowlist propia pueden solicitar una
+  edición remota.
+- Se documenta que el consentimiento dinámico de Atlassian puede ampliar los
+  scopes solicitados y que la allowlist de tools sigue siendo el guardrail
+  efectivo.
 - Se agrega `ticket-session-title.ts` para nombrar automáticamente análisis de `planner` y reviews de `code-reviewer` sin pisar títulos manuales ni sesiones hijas.
 - Se corrige el arranque de OpenCode: el archivo autodetectado del plugin vuelve a exponer únicamente la factory `default`; los helpers se mueven fuera de `plugins/` porque el loader interpreta cada export como un plugin.
 - El addon pasa a ser el único dueño canónico de Jira, `/ticket-*`, `workflow-ticket-handoff` y los helpers asociados.

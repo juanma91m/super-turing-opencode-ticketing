@@ -9,7 +9,7 @@ Esta guía documenta el flujo soportado del addon `super-turing-opencode-ticketi
 - plugin de naming automático para sesiones de `planner` y `code-reviewer`,
 - overlays directos para `agents/plan.md` y `agents/build.md`,
 - augment opcional sobre `planner` y `master-dev` si existen en la instalación activa,
-- wiring de Atlassian Rovo con exposición read-only mínima para `planner`.
+- wiring de Atlassian MCP v2 con exposición read-only mínima para `planner`.
 
 ## Instalación rápida
 
@@ -43,14 +43,20 @@ Esperado si quedó bien instalado:
 - `planner_ticketing_augmented=yes|no` según exista
 - `master_dev_ticketing_augmented=yes|no` según exista
 - `atlassian_rovo_globally_hidden=yes`
-- `planner_rovo_read_tools_only=yes`
+- `atlassian_rovo_v2=yes`
+- `planner_rovo_v2_read_tools=yes`
 
 El scaffolding de overlays y la integración opcional con CodeGraph pertenecen
 al core `opencode-stack`; este addon no instala CodeGraph ni administra sus índices.
 
 El MCP queda registrado para OAuth, pero sus tools se ocultan globalmente.
-`planner` recibe únicamente `search`, `fetch`, `getJiraIssue` y
-`getConfluencePage`; las operaciones de escritura no se exponen al modelo.
+`planner` recibe únicamente resolución de sitio, `search`, `getJiraIssue` y
+`getConfluenceContent`; las operaciones de escritura no se exponen por defecto.
+El scope OAuth de escritura Confluence solo puede usarse desde agentes que
+declaren explícitamente la tool correspondiente y su política de confirmación.
+Atlassian MCP v2 puede pedir consentimiento OAuth para scopes adicionales a los
+declarados por el cliente; por eso el límite de seguridad efectivo es la
+allowlist de tools de OpenCode, no el consentimiento amplio del servidor.
 
 ## Desinstalación
 

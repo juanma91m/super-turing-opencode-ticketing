@@ -13,7 +13,7 @@ Extensión separada del stack base `super-turing-opencode` para todo lo relativo
 - comandos `/ticket-plan|refresh|verdict|implement|validate|code-review`
 - naming automático de sesiones para análisis con `planner` y reviews con `code-reviewer` (`plugins/ticket-session-title.ts`)
 - helpers de Jira (`jira_helper.sh`, `jira_api_read.py`) — REST API, 100% lectura contra Jira; la escritura es local, sandboxeada a `tmp/<ticket>/`
-- MCP `atlassian-rovo` (`mcp/atlassian-rovo.json`, remoto vía OAuth) — el instalador lo mergea en `~/.config/opencode/opencode.json`, oculta globalmente `atlassian-rovo_*` y habilita para `planner` solo search/fetch y las lecturas puntuales de Jira/Confluence
+- MCP v2 `atlassian-rovo` (`mcp/atlassian-rovo.json`, remoto vía OAuth) — el instalador lo mergea en `~/.config/opencode/opencode.json`, oculta globalmente `atlassian-rovo_*` y habilita para `planner` solo resolución de sitio, búsqueda y lecturas puntuales de Jira/Confluence
 - skill `workflow-ticket-handoff`
 - overlays directos para `agents/plan.md` y `agents/build.md`
 - patch aditivo sobre `planner` y `master-dev` si existen en la instalación activa
@@ -22,6 +22,13 @@ Extensión separada del stack base `super-turing-opencode` para todo lo relativo
 El scaffolding y la auditoría de overlays locales pertenecen al core
 `opencode-stack`. CodeGraph conserva el ownership de sus wrappers, MCP, runtime
 e índices.
+
+La configuración declara únicamente lectura Jira/Confluence, búsqueda Rovo y
+escritura de contenido Confluence. Sin embargo, el consentimiento dinámico de
+Atlassian MCP v2 puede mostrar un conjunto de scopes más amplio y no debe
+tratarse como frontera técnica. El control efectivo es deny-by-default sobre
+`atlassian-rovo_*`: cada agente consumidor debe declarar una allowlist propia y
+conservar confirmación interactiva para la mutación remota.
 
 ## Objetivo
 

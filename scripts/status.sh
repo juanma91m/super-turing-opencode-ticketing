@@ -87,14 +87,19 @@ data = json.loads(path.read_text()) if path.exists() else {}
 tools = data.get("tools", {})
 planner_tools = data.get("agent", {}).get("planner", {}).get("tools", {})
 expected = (
+    "atlassian-rovo_getAccessibleAtlassianResources",
     "atlassian-rovo_search",
-    "atlassian-rovo_fetch",
     "atlassian-rovo_getJiraIssue",
+    "atlassian-rovo_getConfluenceContent",
+)
+legacy = (
+    "atlassian-rovo_fetch",
     "atlassian-rovo_getConfluencePage",
 )
 print("atlassian_rovo_mcp_configured=" + ("yes" if "atlassian-rovo" in data.get("mcp", {}) else "no"))
+print("atlassian_rovo_v2=" + ("yes" if data.get("mcp", {}).get("atlassian-rovo", {}).get("url") == "https://mcp.atlassian.com/v2/mcp" else "no"))
 print("atlassian_rovo_globally_hidden=" + ("yes" if tools.get("atlassian-rovo_*") is False else "no"))
-print("planner_rovo_read_tools_only=" + ("yes" if all(planner_tools.get(name) is True for name in expected) else "no"))
+print("planner_rovo_v2_read_tools=" + ("yes" if all(planner_tools.get(name) is True for name in expected) and all(name not in planner_tools for name in legacy) else "no"))
 PY
 printf 'install_marker_present=%s\n' "$([[ -f "$TARGET_DIR/.opencode-ticketing-addon.json" ]] && printf yes || printf no)"
 
