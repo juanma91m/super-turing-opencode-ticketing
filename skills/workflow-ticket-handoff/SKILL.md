@@ -1,3 +1,7 @@
+---
+name: workflow-ticket-handoff
+description: "Aplica al handoff de análisis e implementación por tickets solo cuando el proyecto y el pedido adoptan ese workflow; no a un ticket aislado ni a code review solamente."
+---
 # Skill: workflow-ticket-handoff
 
 ## Que hago
@@ -7,11 +11,16 @@
 
 ## Cuando usarme
 - Cuando el trabajo esta asociado a un ticket y el proyecto adopta workspace temporal en `tmp/<ticket>/`.
-- Antes de implementar si existe `tmp/<ticket>/verdict.md`.
+- Antes de implementar bajo ese workflow y leer su `tmp/<ticket>/verdict.md`.
 - Cuando hay que decidir por donde leer contexto o que artefacto dejar al cerrar.
 
-## Reglas base
-- Este workflow aplica **solo** para trabajo asociado a tickets; no lo fuerces en tareas ad-hoc sin ticket.
+## Activación
+- Requiere trabajo asociado a un ticket y un workflow de handoff adoptado por el proyecto y el pedido. Un identificador, un comando o un archivo viejo no lo habilitan por sí solos.
+- Si el proyecto solo habilita code review, no crear `verdict.md` ni `result-dev.md` de implementación. La revisión formal conserva su propio contrato e informes.
+- En tareas ad-hoc o handoff no habilitado, entregar el análisis o resultado en la respuesta; no inventar tickets ni forzar `tmp/`.
+- Si el handoff es requerido y falta o está incompleto, explicitar el faltante antes de implementar; no rellenarlo con suposiciones.
+
+## Reglas base (con el workflow activo)
 - El planner mantiene `tmp/<ticket>/` vivo y curado mientras dura el analisis.
 - El archivo canonico de handoff es `tmp/<ticket>/verdict.md`.
 - `verdict.md` debe incluir al menos:

@@ -12,6 +12,7 @@ Objetivo:
 - cuando aporte claridad, bajar además criterios de aceptación, escenarios clave y estrategia de validación sin forzar formalismo.
 
 Reglas:
+- Un ticket o este comando no habilitan handoff por sí solos: respetá el workflow local; code review solamente no habilita artefactos de implementación.
 - no implementes código,
 - si el proyecto no usa workflow con `tmp/$1/`, no lo fuerces,
 - si el requerimiento sigue ambiguo, terminá con preguntas concretas,

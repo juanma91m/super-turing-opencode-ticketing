@@ -15,6 +15,7 @@ Objetivo:
 - si existían criterios o escenarios previos, indicar qué quedó cubierto o pendiente.
 
 Reglas:
+- El identificador o este comando no habilitan handoff: si el proyecto no lo adopta para este pedido, implementá desde el alcance acordado sin crear `verdict.md` ni `result-dev.md`.
 - si el proyecto usa `verdict.md` y falta o está incompleto, frená y explicitá qué falta,
 - no recorras `tmp/$1/` completo salvo necesidad real; priorizá `verdict -> evidencias -> repo_findings -> analysis`,
 - no hagas `git add`, `git commit` ni push,

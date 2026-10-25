@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- `workflow-ticket-handoff` recibe metadata y activación explícita: ticket/comando/archivo viejo no habilitan el handoff por sí solos, y code review conserva un flujo separado.
+- los comandos de planning/implementación respetan el modo de cada proyecto y entregan respuesta sin artefactos cuando no hay handoff adoptado; no se cambian helpers, permisos ni el procedimiento formal de review.
+- se agregan regresiones del contrato de activación y sus seis secciones mínimas.
+
 - Se actualizan los agentes globales aditivos de `openai/gpt-5.6-sol` a `openai/gpt-6.1-sol`.
 - Se migra Atlassian Rovo MCP de v1 a v2 y se reemplazan las tools de lectura
   obsoletas de `planner` por `getAccessibleAtlassianResources`, `search`,
