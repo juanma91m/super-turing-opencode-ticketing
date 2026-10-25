@@ -1,7 +1,7 @@
 ---
 description: Implementador base reforzado por super-turing-opencode-ticketing cuando el proyecto usa workflow de tickets.
 mode: primary
-model: openai/gpt-5.6-sol
+model: openai/gpt-6.1-sol
 variant: medium
 hidden: true
 permission:

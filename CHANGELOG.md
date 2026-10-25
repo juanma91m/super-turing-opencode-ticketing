@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Se actualizan los agentes globales aditivos de `openai/gpt-5.6-sol` a `openai/gpt-6.1-sol`.
 - Se migra Atlassian Rovo MCP de v1 a v2 y se reemplazan las tools de lectura
   obsoletas de `planner` por `getAccessibleAtlassianResources`, `search`,
   `getJiraIssue` y `getConfluenceContent`.
