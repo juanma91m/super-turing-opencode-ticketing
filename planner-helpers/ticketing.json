@@ -1,0 +1,21 @@
+{
+  "jira": {
+    "path": "scripts/jira_helper.sh",
+    "interpreter": "bash",
+    "metadata_scope": "tmp",
+    "project_env_files": {"JIRA_ENV_FILE": ".opencode/.jira.env"},
+    "verbs": {
+      "issue": {"positionals": [{"pattern": "[A-Z][A-Z0-9_]*-[0-9]+"}]},
+      "context": {"positionals": [{"pattern": "[A-Z][A-Z0-9_]*-[0-9]+"}], "options": {"--parent-depth": "int", "--siblings": "int", "--comments": "int", "--links": "int"}},
+      "search": {"positionals": ["text"], "options": {"--max-results": "int"}},
+      "attachments": {"positionals": [{"pattern": "[A-Z][A-Z0-9_]*-[0-9]+"}]},
+      "dump": {"positionals": [{"pattern": "[A-Z][A-Z0-9_]*-[0-9]+"}], "options": {"--out": "tmp-path", "--parent-depth": "int", "--siblings": "int", "--comments": "int", "--links": "int"}},
+      "note": {"positionals": [{"pattern": "[A-Z][A-Z0-9_]*-[0-9]+"}], "options": {"--content": "text", "--file": "relative"}, "required": ["--content"]},
+      "write": {"positionals": [{"pattern": "[A-Z][A-Z0-9_]*-[0-9]+"}], "options": {"--content": "text", "--file": "relative", "--append": "flag"}, "required": ["--content", "--file"]},
+      "verdict": {"positionals": [{"pattern": "[A-Z][A-Z0-9_]*-[0-9]+"}], "options": {"--content": "text"}, "required": ["--content"]},
+      "mkdir": {"positionals": [{"pattern": "[A-Z][A-Z0-9_]*-[0-9]+"}], "options": {"--dir": "relative"}, "required": ["--dir"]},
+      "delete": {"positionals": [{"pattern": "[A-Z][A-Z0-9_]*-[0-9]+"}], "options": {"--path": "relative"}, "required": ["--path"]},
+      "attachment-get": {"positionals": ["int"], "options": {"--out": "tmp-path"}, "required": ["--out"]}
+    }
+  }
+}

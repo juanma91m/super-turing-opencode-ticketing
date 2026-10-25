@@ -15,7 +15,9 @@ description: "Aplica al handoff de análisis e implementación por tickets solo 
 - Cuando hay que decidir por donde leer contexto o que artefacto dejar al cerrar.
 
 ## Activación
-- Requiere trabajo asociado a un ticket y un workflow de handoff adoptado por el proyecto y el pedido. Un identificador, un comando o un archivo viejo no lo habilitan por sí solos.
+- Requiere un ticket concreto y un proyecto que admita handoff. En ese proyecto, `/ticket-plan`, `/ticket-refresh`, `/ticket-verdict` o `/ticket-implement` cuentan como pedido explícito: no repreguntar si se activa ni decidir por mera conveniencia.
+- Un identificador aislado o un archivo viejo no activan handoff. Los comandos no cambian la política del proyecto: en review-only no crean artefactos de implementación, y `/ticket-code-review` conserva solo su flujo formal.
+- Respetar pedidos expresos sin archivos dentro de las reglas del proyecto; si contradicen un requisito obligatorio, señalar el conflicto antes de actuar, no elegir silenciosamente.
 - Si el proyecto solo habilita code review, no crear `verdict.md` ni `result-dev.md` de implementación. La revisión formal conserva su propio contrato e informes.
 - En tareas ad-hoc o handoff no habilitado, entregar el análisis o resultado en la respuesta; no inventar tickets ni forzar `tmp/`.
 - Si el handoff es requerido y falta o está incompleto, explicitar el faltante antes de implementar; no rellenarlo con suposiciones.

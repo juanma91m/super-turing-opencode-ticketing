@@ -11,7 +11,7 @@ Objetivo:
 - dejar el workspace temporal consistente con el estado actual del análisis.
 
 Reglas:
-- Un ticket o este comando no habilitan handoff por sí solos: respetá el workflow local; si no está activo, respondé sin crear artefactos de implementación.
+- En un proyecto que admite handoff, este comando con ticket concreto es pedido explícito. Un ID aislado o un proyecto review-only no lo habilitan; fuera del flujo, responder sin artefactos.
 - no implementes código,
 - si el proyecto no usa workflow con `tmp/$1/`, devolvé el refresh en la respuesta,
 - si algo cambió, dejalo explícito,

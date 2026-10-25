@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Un comando específico con ticket concreto es pedido explícito en proyectos que admiten handoff; un ID aislado y review-only no lo activan. Se elimina la decisión por conveniencia del modelo.
+- `planner-helpers/ticketing.json` declara la interfaz Jira aprobada para el ejecutor de análisis, con argumentos/sandbox metadata y sin duplicar el helper ni acceder a credenciales crudas.
+
 - `workflow-ticket-handoff` recibe metadata y activación explícita: ticket/comando/archivo viejo no habilitan el handoff por sí solos, y code review conserva un flujo separado.
 - los comandos de planning/implementación respetan el modo de cada proyecto y entregan respuesta sin artefactos cuando no hay handoff adoptado; no se cambian helpers, permisos ni el procedimiento formal de review.
 - se agregan regresiones del contrato de activación y sus seis secciones mínimas.

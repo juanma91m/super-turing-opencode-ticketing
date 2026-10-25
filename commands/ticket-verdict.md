@@ -9,7 +9,7 @@ Objetivo:
 - sintetizar el estado final del plan,
 - dejar `tmp/$1/verdict.md` actualizado cuando el proyecto usa el patrón de handoff.
 
-Si el handoff local no está habilitado, entregá el veredicto en la respuesta sin crear `tmp/` ni habilitarlo por el identificador o este comando.
+En un proyecto que admite handoff, este comando con ticket concreto es pedido explícito. Si el proyecto no lo habilita (por ejemplo review-only), entregar el veredicto en la respuesta sin crear `tmp/`; un ID aislado no lo activa.
 
 Secciones del veredicto (archivo solo con handoff activo):
 - Problema / Objetivo
