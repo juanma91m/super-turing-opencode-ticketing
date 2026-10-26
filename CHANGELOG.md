@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Punto 3: `/ticket-code-review` remite al procedimiento compartido y al contrato local de Jira/helper/storage; conserva entradas y routing, no amplía permisos ni introduce fallback global o handoff de implementación.
+
 - Un comando específico con ticket concreto es pedido explícito en proyectos que admiten handoff; un ID aislado y review-only no lo activan. Se elimina la decisión por conveniencia del modelo.
 - `planner-helpers/ticketing.json` declara la interfaz Jira aprobada para el ejecutor de análisis, con argumentos/sandbox metadata y sin duplicar el helper ni acceder a credenciales crudas.
 

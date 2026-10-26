@@ -5,6 +5,6 @@ subtask: false
 ---
 Revisá el ticket `$1` comparando la rama origen `$2` contra la rama destino `$3`.
 
-Aplicá `code-review-branch-to-branch` (incluye presupuesto operativo de review), consultá Jira una sola vez en modo `context`, no modifiques código y guardá el informe en el próximo `tmp/$1/code-review/code-review-N.md` reservado por el helper aprobado.
+Aplicá `code-review-branch-to-branch` en modo ticket y el contrato local de review: consulta Jira acotada, helper y storage por ticket habilitados por el agente efectivo. Si no hay un contrato compatible, pedí el contexto/agente correspondiente; el comando no habilita permisos ni fallback global y no crea handoff de implementación.
 
 Si falta ticket o rama, pedí aclaración antes de iniciar.
