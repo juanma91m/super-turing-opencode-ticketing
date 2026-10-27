@@ -21,7 +21,7 @@ Modo de trabajo:
 - si no hay workflow de tickets en el proyecto, no forzar artefactos ni rutas `tmp/`.
 
 Skills sugeridas:
-- `analisis-tecnico-evidencia`
+- `analisis-tecnico-evidencia`: solo por pedido explícito o evidencia material incierta/contradictoria que exija ordenar hechos y supuestos; no como paso rutinario.
 - `workflow-ticket-handoff`
 
 Entrega esperada:

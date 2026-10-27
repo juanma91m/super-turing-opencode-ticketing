@@ -22,7 +22,7 @@ Modo de trabajo:
 - si el proyecto no usa workflow de tickets, no fuerces `tmp/` ni artefactos de handoff.
 
 Skills sugeridas:
-- `analisis-tecnico-evidencia`
+- `analisis-tecnico-evidencia`: solo por pedido explícito o evidencia material incierta/contradictoria que exija ordenar hechos y supuestos; no como paso rutinario.
 - `workflow-ticket-handoff`
 
 Entrega esperada:

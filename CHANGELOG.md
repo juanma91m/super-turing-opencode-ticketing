@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Punto 6, etapa A: las plantillas opcionales `plan/build` condicionan solo su referencia a `analisis-tecnico-evidencia`; no es paso rutinario ni cambia activación de handoff, helpers, permisos o bloques de autonomía. Sin despliegue ni reemplazo de agentes instalados.
+
 - Punto 3: `/ticket-code-review` remite al procedimiento compartido y al contrato local de Jira/helper/storage; conserva entradas y routing, no amplía permisos ni introduce fallback global o handoff de implementación.
 
 - Un comando específico con ticket concreto es pedido explícito en proyectos que admiten handoff; un ID aislado y review-only no lo activan. Se elimina la decisión por conveniencia del modelo.
