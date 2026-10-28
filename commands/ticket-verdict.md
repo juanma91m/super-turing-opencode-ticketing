@@ -11,6 +11,8 @@ Objetivo:
 
 En un proyecto que admite handoff, este comando con ticket concreto es pedido explícito. Si el proyecto no lo habilita (por ejemplo review-only), entregar el veredicto en la respuesta sin crear `tmp/`; un ID aislado no lo activa.
 
+Con handoff activo, cargar `workflow-ticket-handoff`, escribir y releer el archivo real antes de anunciar listo para implementar. Verificar ticket/path, secciones mínimas, alcance vigente y bloqueos materiales; reportar path/estado/pendientes. No pedir segunda autorización, confundir memoria/chat con el archivo ni declarar listo un borrador incompleto o una escritura fallida.
+
 Secciones del veredicto (archivo solo con handoff activo):
 - Problema / Objetivo
 - Alcance

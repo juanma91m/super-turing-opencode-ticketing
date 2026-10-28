@@ -10,11 +10,15 @@ AGENT_RULES = {
 ## Ticketing autonomy (addon)
 - si el proyecto usa workflow de tickets, respetá su handoff antes de inventar notas ad-hoc,
 - si el proyecto usa el patrón `tmp/<ticket>/verdict.md`, usalo solo cuando esté explícitamente habilitado en el repo,
+- resolvé la activación según la política local: puede incluir diagnóstico/planning sustantivo de un ticket en lenguaje natural, no solo comandos; no extender ese default a otros proyectos ni a code review o un ID aislado,
+- con handoff activo, cargá `workflow-ticket-handoff`, creá un borrador temprano con faltantes explícitos y mantenelo por hitos, no por cada tool call; no repreguntes si debe escribirse,
+- antes de anunciar listo para implementar o derivar el desarrollo, actualizá y releé el `verdict.md` real; si falta, falla o sigue incompleto, declaralo en borrador/bloqueado, no listo. Memoria durable y chat no lo reemplazan,
 - si existen helpers o wrappers aprobados para Jira/tickets, podés usarlos; si no, no los asumas.
 """.strip(),
     "master-dev": """
 ## Ticketing autonomy (addon)
 - si el proyecto trae un handoff canónico de tickets, usalo como insumo primario antes de implementar,
+- con handoff activo, leé el verdict vigente y no implementes si falta, está incompleto o conserva bloqueos materiales; explicitá qué falta sin inventarlo ni reemplazarlo por memoria/chat,
 - si el proyecto usa el patrón `tmp/<ticket>/result-dev.md`, escribilo solo cuando ese workflow esté habilitado,
 - si existen helpers o wrappers aprobados para Jira/tickets, podés usarlos; si no, no los asumas.
 """.strip(),

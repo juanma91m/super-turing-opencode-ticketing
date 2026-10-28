@@ -16,4 +16,5 @@ Reglas:
 - no implementes código,
 - si el proyecto no usa workflow con `tmp/$1/`, no lo fuerces,
 - si el requerimiento sigue ambiguo, terminá con preguntas concretas,
-- si el proyecto adopta el patrón de handoff, dejá encaminado `tmp/$1/verdict.md` o explicitá qué falta para cerrarlo.
+- con handoff activo, cargar `workflow-ticket-handoff` y crear o actualizar `tmp/$1/verdict.md` como borrador temprano, con faltantes explícitos; mantenerlo por hitos. Las preguntas abiertas no justifican postergar el archivo ni inventar datos.
+- antes de anunciar listo para implementar, actualizar y releer el archivo real; informar path, estado y pendientes. Si falla o sigue incompleto, no declararlo listo ni pedir otra autorización para escribirlo.
