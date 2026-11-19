@@ -15,6 +15,11 @@ PLANNER_READ_TOOLS = (
     "atlassian-rovo_getJiraIssue",
     "atlassian-rovo_getConfluenceContent",
 )
+CODE_REVIEWER_READ_TOOLS = (
+    "atlassian-rovo_getAccessibleAtlassianResources",
+    "atlassian-rovo_search",
+    "atlassian-rovo_getJiraIssue",
+)
 LEGACY_PLANNER_READ_TOOLS = (
     "atlassian-rovo_fetch",
     "atlassian-rovo_getConfluencePage",
@@ -46,6 +51,10 @@ def install(config: dict, fragment: dict) -> None:
     for tool_name in PLANNER_READ_TOOLS:
         planner_tools[tool_name] = True
 
+    reviewer_tools = config["agent"].setdefault("code-reviewer", {}).setdefault("tools", {})
+    for tool_name in CODE_REVIEWER_READ_TOOLS:
+        reviewer_tools[tool_name] = True
+
 
 def uninstall(config: dict, fragment: dict) -> None:
     mcp = config.get("mcp")
@@ -68,6 +77,15 @@ def uninstall(config: dict, fragment: dict) -> None:
                 planner_tools.pop(tool_name, None)
         if not planner_tools:
             planner.pop("tools", None)
+
+    reviewer = (config.get("agent") or {}).get("code-reviewer")
+    reviewer_tools = reviewer.get("tools") if isinstance(reviewer, dict) else None
+    if isinstance(reviewer_tools, dict):
+        for tool_name in CODE_REVIEWER_READ_TOOLS:
+            if reviewer_tools.get(tool_name) is True:
+                reviewer_tools.pop(tool_name, None)
+        if not reviewer_tools:
+            reviewer.pop("tools", None)
 
 
 def main() -> int:
@@ -95,6 +113,11 @@ def main() -> int:
                 name
                 for name in PLANNER_READ_TOOLS
                 if ((config.get("agent", {}).get("planner", {}).get("tools", {})).get(name) is True)
+            ),
+            "codeReviewerReadTools": sorted(
+                name
+                for name in CODE_REVIEWER_READ_TOOLS
+                if config.get("agent", {}).get("code-reviewer", {}).get("tools", {}).get(name) is True
             ),
         }, indent=2))
         return 0

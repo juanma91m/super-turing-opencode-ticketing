@@ -45,6 +45,7 @@ Esperado si quedó bien instalado:
 - `atlassian_rovo_globally_hidden=yes`
 - `atlassian_rovo_v2=yes`
 - `planner_rovo_v2_read_tools=yes`
+- `code_reviewer_jira_read_tools=yes`
 
 El scaffolding de overlays y la integración opcional con CodeGraph pertenecen
 al core `opencode-stack`; este addon no instala CodeGraph ni administra sus índices.
@@ -52,6 +53,10 @@ al core `opencode-stack`; este addon no instala CodeGraph ni administra sus índ
 El MCP queda registrado para OAuth, pero sus tools se ocultan globalmente.
 `planner` recibe únicamente resolución de sitio, `search`, `getJiraIssue` y
 `getConfluenceContent`; las operaciones de escritura no se exponen por defecto.
+`code-reviewer` recibe resolución de sitio, `search` y `getJiraIssue` globalmente,
+sin exigir opt-in al handoff por proyecto. Descripción y comentarios del ticket
+se consultan por esa integración o por el helper read-only del contrato local.
+No recibe tools de escritura ni lectura general de Confluence.
 El scope OAuth de escritura Confluence solo puede usarse desde agentes que
 declaren explícitamente la tool correspondiente y su política de confirmación.
 Atlassian MCP v2 puede pedir consentimiento OAuth para scopes adicionales a los

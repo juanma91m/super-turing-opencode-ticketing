@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- El wiring global de `code-reviewer` habilita únicamente resolución de sitio,
+  búsqueda y lectura puntual Jira para contrastar requisitos y comentarios en
+  cualquier proyecto, sin activar handoff ni mutaciones. Install/uninstall,
+  dry-run y status conservan el lifecycle de esa allowlist.
+
 - Punto 6, etapa A: las plantillas opcionales `plan/build` condicionan solo su referencia a `analisis-tecnico-evidencia`; no es paso rutinario ni cambia activación de handoff, helpers, permisos o bloques de autonomía. Sin despliegue ni reemplazo de agentes instalados.
 
 - Punto 3: `/ticket-code-review` remite al procedimiento compartido y al contrato local de Jira/helper/storage; conserva entradas y routing, no amplía permisos ni introduce fallback global o handoff de implementación.

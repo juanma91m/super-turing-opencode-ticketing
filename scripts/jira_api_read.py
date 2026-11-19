@@ -601,26 +601,33 @@ def parse_args(argv):
 
 def main(argv=None) -> int:
     args = parse_args(argv or sys.argv[1:])
-    env_file = os.environ.get("JIRA_ENV_FILE", os.path.join(os.getcwd(), ".env"))
-    load_env_file(env_file)
-
-    base_url = os.environ.get("JIRA_BASE_URL")
-    email = os.environ.get("JIRA_EMAIL")
-    token = os.environ.get("JIRA_API_TOKEN")
-
-    if not base_url or not email or not token:
-        print(
-            json.dumps(
-                {
-                    "error": "Missing Jira credentials in environment",
-                    "required": ["JIRA_BASE_URL", "JIRA_EMAIL", "JIRA_API_TOKEN"],
-                },
-                ensure_ascii=False,
-            )
-        )
-        return 1
-
     try:
+        # Workspace metadata is local and must work even when Jira is unavailable.
+        # Do not load env files or initialize authentication for these operations.
+        if args.mode in {"note", "write", "verdict", "mkdir", "delete"}:
+            if args.mode == "note":
+                payload = write_note(args.key, args.content, args.file)
+            elif args.mode == "write":
+                payload = write_workspace_file(args.key, args.file, args.content, args.append)
+            elif args.mode == "verdict":
+                payload = write_verdict(args.key, args.content)
+            elif args.mode == "mkdir":
+                payload = mkdir_workspace(args.key, args.dir)
+            else:
+                payload = delete_workspace(args.key, args.path)
+            print(json.dumps(payload, ensure_ascii=False, indent=2))
+            return 0
+
+        env_file = os.environ.get("JIRA_ENV_FILE", os.path.join(os.getcwd(), ".env"))
+        load_env_file(env_file)
+        base_url = os.environ.get("JIRA_BASE_URL")
+        email = os.environ.get("JIRA_EMAIL")
+        token = os.environ.get("JIRA_API_TOKEN")
+        if not base_url or not email or not token:
+            print(json.dumps({"error": "Missing Jira credentials in environment",
+                              "required": ["JIRA_BASE_URL", "JIRA_EMAIL", "JIRA_API_TOKEN"]}, ensure_ascii=False))
+            return 1
+
         if args.mode == "issue":
             payload = jira_json_get(
                 f"/rest/api/3/issue/{urllib.parse.quote(args.key)}?fields={urllib.parse.quote(','.join(DEFAULT_ISSUE_FIELDS))}",
@@ -689,16 +696,6 @@ def main(argv=None) -> int:
                 token,
                 base_url,
             )
-        elif args.mode == "note":
-            payload = write_note(args.key, args.content, args.file)
-        elif args.mode == "write":
-            payload = write_workspace_file(args.key, args.file, args.content, args.append)
-        elif args.mode == "verdict":
-            payload = write_verdict(args.key, args.content)
-        elif args.mode == "mkdir":
-            payload = mkdir_workspace(args.key, args.dir)
-        elif args.mode == "delete":
-            payload = delete_workspace(args.key, args.path)
         else:
             payload = {"error": f"Unsupported mode: {args.mode}"}
             print(json.dumps(payload, ensure_ascii=False, indent=2))

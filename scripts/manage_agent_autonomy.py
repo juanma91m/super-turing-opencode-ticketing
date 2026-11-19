@@ -12,6 +12,7 @@ AGENT_RULES = {
 - si el proyecto usa el patrón `tmp/<ticket>/verdict.md`, usalo solo cuando esté explícitamente habilitado en el repo,
 - resolvé la activación según la política local: puede incluir diagnóstico/planning sustantivo de un ticket en lenguaje natural, no solo comandos; no extender ese default a otros proyectos ni a code review o un ID aislado,
 - con handoff activo, cargá `workflow-ticket-handoff`, creá un borrador temprano con faltantes explícitos y mantenelo por hitos, no por cada tool call; no repreguntes si debe escribirse,
+- para escribirlo usá `python3 ~/.config/opencode/scripts/planner_shell.py helper jira verdict <ticket> --content '<contenido literal>'`: es escritura local aprobada, sin Edit ni credenciales Jira. Antes de afirmar que falta el helper, consultá `planner_shell.py --help` y probá la vía registrada; reportá el error real, no derives a otro rol solo por `edit: deny`,
 - antes de anunciar listo para implementar o derivar el desarrollo, actualizá y releé el `verdict.md` real; si falta, falla o sigue incompleto, declaralo en borrador/bloqueado, no listo. Memoria durable y chat no lo reemplazan,
 - si existen helpers o wrappers aprobados para Jira/tickets, podés usarlos; si no, no los asumas.
 """.strip(),

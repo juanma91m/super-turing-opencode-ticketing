@@ -26,6 +26,7 @@ description: "Aplica al handoff de análisis e implementación por tickets solo 
 ## Reglas base (con el workflow activo)
 - El planner mantiene `tmp/<ticket>/` vivo y curado mientras dura el analisis.
 - El archivo canonico de handoff es `tmp/<ticket>/verdict.md`.
+- Con el addon instalado, `planner` escribe mediante `python3 ~/.config/opencode/scripts/planner_shell.py helper jira verdict <ticket> --content '<contenido literal>'`. Este comando local no requiere conexión/credenciales Jira ni permiso Edit. Antes de declarar que no hay helper, consultar el `--help` del broker e intentar la vía registrada; informar un fallo comprobado, no deducirlo de `edit: deny` ni derivar la escritura a otro rol.
 - `verdict.md` debe incluir al menos:
   - `Problema / Objetivo`
   - `Alcance`

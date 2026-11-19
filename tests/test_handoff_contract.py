@@ -4,6 +4,10 @@ import importlib.util
 import io
 import json
 import os
+import shlex
+import shutil
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -120,6 +124,78 @@ class HandoffContractTests(unittest.TestCase):
 
 
 class LocalHandoffFixtureTests(unittest.TestCase):
+    def test_handoff_route_is_explicit_in_planner_augmentation_and_shared_skill(self):
+        autonomy = module('explicit_handoff_autonomy', ROOT / 'scripts/manage_agent_autonomy.py')
+        command = "planner_shell.py helper jira verdict <ticket> --content"
+        self.assertIn(command, autonomy.AGENT_RULES['planner'])
+        self.assertIn(command, (ROOT / 'skills/workflow-ticket-handoff/SKILL.md').read_text())
+
+    def test_broker_help_discovers_verdict_instead_of_only_the_jira_id(self):
+        core = ROOT.parent / 'opencode-stack/scripts/planner_shell.py'
+        if not core.exists(): self.skipTest('Optional Core broker not available')
+        broker = module('discovery_handoff_broker', core)
+        with tempfile.TemporaryDirectory(prefix='handoff-discovery-') as temporary:
+            config = Path(temporary)
+            (config / 'planner-helpers').mkdir()
+            shutil.copyfile(ROOT / 'planner-helpers/ticketing.json', config / 'planner-helpers/ticketing.json')
+            output = io.StringIO()
+            with patch.object(broker, 'CONFIG', config), redirect_stdout(output):
+                self.assertEqual(broker.main(['--help']), 0)
+            self.assertIn('verdict', output.getvalue())
+            self.assertIn('--content', output.getvalue())
+
+    def test_full_broker_cli_guard_write_reread_and_update_without_auth(self):
+        core = ROOT.parent / 'opencode-stack/scripts/planner_shell.py'
+        if not core.exists(): self.skipTest('Optional Core broker not available')
+        with tempfile.TemporaryDirectory(prefix='handoff-cli-') as temporary:
+            root = Path(temporary)
+            config, project = root / 'config', root / 'project'
+            (config / 'planner-helpers').mkdir(parents=True)
+            (config / 'scripts').mkdir()
+            project.mkdir()
+            for name in ('jira_helper.sh', 'jira_api_read.py'):
+                shutil.copyfile(ROOT / 'scripts' / name, config / 'scripts' / name)
+            shutil.copyfile(core, config / 'scripts/planner_shell.py')
+            shutil.copyfile(ROOT / 'planner-helpers/ticketing.json', config / 'planner-helpers/ticketing.json')
+            app = project / 'app.txt'
+            app.write_text('application unchanged')
+            env = {'PATH':os.environ.get('PATH',os.defpath), 'HOME':str(root),
+                   'JIRA_ENV_FILE':str(root / 'must-not-open.example'), 'PYTHONDONTWRITEBYTECODE':'1'}
+            broker = config / 'scripts/planner_shell.py'
+            for state in ('borrador', 'actualizado', 'listo'):
+                content = f"## Estado actual\n{state}\n\nLiteral `$()`; O'Brien; no shell execution"
+                argv = ['python3', str(broker), 'helper', 'jira', 'verdict', 'TEST-101', '--content', content]
+                checked = subprocess.run([sys.executable,str(broker),'--check'],cwd=project,env=env,
+                    input=json.dumps({'command':shlex.join(argv),'cwd':str(project),'project_root':str(project)}),
+                    capture_output=True,text=True,timeout=10)
+                self.assertEqual(checked.returncode,0,checked.stderr)
+                done = subprocess.run([sys.executable,*argv[1:]],cwd=project,env=env,capture_output=True,text=True,timeout=10)
+                self.assertEqual(done.returncode,0,done.stderr + done.stdout)
+                self.assertEqual((project / 'tmp/TEST-101/verdict.md').read_text(),content + '\n')
+                self.assertEqual(app.read_text(),'application unchanged')
+
+    def test_local_verdict_needs_neither_env_file_nor_jira_credentials(self):
+        api = module('offline_handoff_api', ROOT / 'scripts/jira_api_read.py')
+        with tempfile.TemporaryDirectory(prefix='offline-handoff-') as temporary:
+            project = Path(temporary)
+            with patch.dict(os.environ, {}, clear=True), patch.object(api, 'repo_root', return_value=project), \
+                 patch.object(api, 'load_env_file', side_effect=AssertionError('Local handoff must not read env files')) as read_env, \
+                 patch.object(api.urllib.request, 'urlopen', side_effect=AssertionError('Local handoff must not use network')) as network:
+                with redirect_stdout(io.StringIO()):
+                    self.assertEqual(api.main(['verdict', 'TEST-101', '--content', 'Synthetic offline handoff']), 0)
+                self.assertEqual((project / 'tmp/TEST-101/verdict.md').read_text(), 'Synthetic offline handoff\n')
+                read_env.assert_not_called()
+                network.assert_not_called()
+
+    def test_remote_context_still_requires_authentication(self):
+        api = module('remote_handoff_api', ROOT / 'scripts/jira_api_read.py')
+        with patch.dict(os.environ, {}, clear=True), patch.object(api, 'load_env_file') as read_env, \
+             patch.object(api.urllib.request, 'urlopen', side_effect=AssertionError('Unauthenticated network forbidden')) as network:
+            with redirect_stdout(io.StringIO()):
+                self.assertEqual(api.main(['context', 'TEST-101']), 1)
+            read_env.assert_called_once()
+            network.assert_not_called()
+
     def test_broker_writes_and_rereads_draft_updates_and_ready_without_network(self):
         core = ROOT.parent / 'opencode-stack/scripts/planner_shell.py'
         if not core.exists():

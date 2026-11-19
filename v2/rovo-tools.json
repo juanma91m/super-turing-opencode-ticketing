@@ -1,0 +1,13 @@
+{
+  "planner": [
+    "atlassian-rovo_getAccessibleAtlassianResources",
+    "atlassian-rovo_search",
+    "atlassian-rovo_getJiraIssue",
+    "atlassian-rovo_getConfluenceContent"
+  ],
+  "code-reviewer": [
+    "atlassian-rovo_getAccessibleAtlassianResources",
+    "atlassian-rovo_search",
+    "atlassian-rovo_getJiraIssue"
+  ]
+}
