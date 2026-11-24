@@ -83,10 +83,9 @@ de requests V1/V2 ni inventar parámetros extra para ocultar esa diferencia.
 Procedimiento ya aplicado por el operador. Requirió cerrar el intento y cliente
 V2; no hace falta repetirlo después de un login exitoso:
 
-```bash
-node "$HOME/.local/src/opencode-stack/migrations/v2/ticketing.mjs" oauth-discovery --client-closed
-node "$HOME/.local/src/opencode-stack/migrations/v2/ticketing.mjs" chat
-```
+
+Usá la entrada gestionada con el addon configurado; ver [Core](https://github.com/juanma91m/super-turing-opencode/blob/main/v2/install/README.md).
+
 
 Luego iniciar una autorización nueva en `/mcps`, sin repetir apply/oauth-identity,
 sin reutilizar links, sin leer/copiar/borrar tokens. Si falla el primer comando,
@@ -291,8 +290,6 @@ Procedimiento histórico ya ejecutado por el operador; **no repetir como soluci�
 Requería el intento fallido y el cliente V2 cerrados, desde una terminal normal:
 
 ```bash
-node "$HOME/.local/src/opencode-stack/migrations/v2/ticketing.mjs" oauth-identity --client-closed
-node "$HOME/.local/src/opencode-stack/migrations/v2/ticketing.mjs" chat
 ```
 
 Luego iniciar una autorización nueva en `/mcps`, sin reutilizar links anteriores.
@@ -366,8 +363,6 @@ ocupado sin cerrar a su dueño. Las URL/state/verificadores/tokens no se vuelcan
 Desde la base canónica:
 
 ```bash
-node --test migrations/v2/test/rovo-oauth.test.mjs
-node migrations/v2/smoke-ticketing-oauth.mjs
 ```
 
 El operador sí ejecutó el cambio después de cerrar el cliente; falló también el
@@ -380,8 +375,6 @@ reintento real DCR. **OAuth real y catálogo/lectura reales siguen pendientes.**
 2. Desde una terminal normal, con HOME real:
 
 ```bash
-node "$HOME/.local/src/opencode-stack/migrations/v2/ticketing.mjs" oauth-compat --client-closed
-node "$HOME/.local/src/opencode-stack/migrations/v2/ticketing.mjs" chat
 ```
 
 La primera acción hace sólo el upgrade y `debug config`; no llama APIs OAuth,

@@ -8,7 +8,7 @@ import { spawnSync } from 'node:child_process';
 import { prepareGeneral,generalEnvironment } from '../../../opencode-stack/v2/general/profile.mjs';
 import { startOwnedServer,until } from '../../../opencode-stack/v2/general/owned-server.mjs';
 import { officialRuntime } from '../../../opencode-stack/v2/general/lifecycle.mjs';
-import { nativeAddonFixture } from '../../../opencode-stack/migrations/v2/fixtures/general-addon-stack.mjs';
+import { nativeAddonFixture } from '../../../opencode-stack/v2/testing/fixtures/general-addon-stack.mjs';
 
 test('official native capture/report uses stored messages, preserves ask/rejection/role boundaries and writes only projected metrics',async t=>{
   const root=fs.mkdtempSync('/tmp/opencode/native-ticket-metrics-');t.after(()=>fs.rmSync(root,{recursive:true,force:true}));

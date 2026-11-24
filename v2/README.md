@@ -150,11 +150,9 @@ node --test tests/ticket-session-title.test.ts v2/test/*.test.mjs
 
 Desde el stack base canónico:
 
-```bash
-node --test migrations/v2/test/*.test.mjs
-node migrations/v2/smoke-ticketing.mjs
-node migrations/v2/ticketing.mjs plan
-```
+
+Usá la entrada gestionada con el addon configurado; ver [Core](https://github.com/juanma91m/super-turing-opencode/blob/main/v2/install/README.md).
+
 
 Veintiún casos nativos pasaron con MCPs y modelo locales ficticios, sin requests
 a Jira/Confluence ni uso de tokens reales: resolución/búsqueda/issue/Confluence
@@ -186,11 +184,9 @@ después de compartir su selección de perfil, sin activar Rovo.
 **Cerrar primero el cliente del workshop V2**, no producción V1. No se matan
 procesos ajenos. `--client-closed` es confirmación del operador, no aislamiento OS.
 
-```bash
-node "$HOME/.local/src/opencode-stack/migrations/v2/ticketing.mjs" plan
-node "$HOME/.local/src/opencode-stack/migrations/v2/ticketing.mjs" apply --client-closed
-node "$HOME/.local/src/opencode-stack/migrations/v2/ticketing.mjs" chat
-```
+
+Usá la entrada gestionada con el addon configurado; ver [Core](https://github.com/juanma91m/super-turing-opencode/blob/main/v2/install/README.md).
+
 
 Apply configura el Rovo real y comprueba su estado de conexión, **pero no ejecuta
 herramientas Jira ni autentica automáticamente**. Un estado pendiente de auth no
