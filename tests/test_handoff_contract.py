@@ -196,6 +196,107 @@ class LocalHandoffFixtureTests(unittest.TestCase):
             read_env.assert_called_once()
             network.assert_not_called()
 
+    def test_managed_context_uses_only_the_private_binding_at_the_git_root(self):
+        api = module('managed_context_api', ROOT / 'scripts/jira_api_read.py')
+        with tempfile.TemporaryDirectory(prefix='jira-managed-context-') as temporary:
+            root = Path(temporary)
+            subprocess.run(['git', 'init', '-q', str(root)], check=True)
+            nested = root / 'src'
+            nested.mkdir()
+            dedicated = root / '.opencode' / '.jira.env'
+            dedicated.parent.mkdir()
+            dedicated.write_text('JIRA_BASE_URL=https://jira.invalid\nJIRA_EMAIL=fixture@example.invalid\nJIRA_API_TOKEN="synthetic-token"\nUNRELATED=ignore\n')
+            dedicated.chmod(0o600)
+            (root / '.git/info/exclude').write_text('/.opencode/.jira.env\n')
+            env = {'PATH': os.defpath, 'JIRA_ENV_FILE': str(root / 'must-not-open.example'), 'JIRA_API_TOKEN': 'must-not-inherit'}
+            with patch.dict(os.environ, env, clear=True), patch.object(api.Path, 'cwd', return_value=nested), \
+                 patch.object(api, 'load_env_file', side_effect=AssertionError('Must not read legacy settings')), \
+                 patch.object(api, 'build_context', return_value={'ok': True}) as context, redirect_stdout(io.StringIO()):
+                self.assertEqual(api.main(['context', 'TEST-101'], managed=True), 0)
+                self.assertEqual(context.call_args.args[-3:], ('fixture@example.invalid', 'synthetic-token', 'https://jira.invalid'))
+                self.assertNotIn('UNRELATED', os.environ)
+
+    def test_managed_context_blocks_missing_unsafe_or_incomplete_binding_without_network(self):
+        api = module('managed_context_refused', ROOT / 'scripts/jira_api_read.py')
+        with tempfile.TemporaryDirectory(prefix='jira-managed-refused-') as temporary:
+            root = Path(temporary)
+            subprocess.run(['git', 'init', '-q', str(root)], check=True)
+            dedicated = root / '.opencode' / '.jira.env'
+            dedicated.parent.mkdir()
+            with patch.object(api.Path, 'cwd', return_value=root), patch.object(api, 'build_context') as context:
+                def check(expected):
+                    output = io.StringIO()
+                    with redirect_stdout(output):
+                        self.assertEqual(api.main(['context', 'TEST-101'], managed=True), 1)
+                    self.assertIn(expected, json.loads(output.getvalue())['error'])
+                check('missing')
+                dedicated.symlink_to(root / 'must-not-read.example')
+                check('private regular file')
+                dedicated.unlink()
+                dedicated.write_text('JIRA_BASE_URL=https://jira.invalid\n')
+                dedicated.chmod(0o644)
+                check('private regular file')
+                dedicated.chmod(0o600)
+                check('excluded from Git')
+                (root / '.git/info/exclude').write_text('/.opencode/.jira.env\n')
+                check('incomplete')
+                dedicated.write_text('JIRA_BASE_URL=http://jira.invalid\nJIRA_EMAIL=fixture@example.invalid\nJIRA_API_TOKEN=synthetic-token\n')
+                check('HTTPS')
+                subprocess.run(['git', '-C', str(root), 'add', '-f', '--', str(dedicated)], check=True)
+                check('tracked by Git')
+                context.assert_not_called()
+
+    def test_aune_context_shares_one_binding_and_refuses_repo_fallback(self):
+        api = module('managed_aune_context', ROOT / 'scripts/jira_api_read.py')
+        with tempfile.TemporaryDirectory(prefix='jira-aune-binding-') as temporary:
+            home = Path(temporary).resolve()
+            scope = home / 'workspace'
+            repositories = [scope / 'first', scope / 'second', home / 'unrelated']
+            for repo in repositories:
+                repo.mkdir(parents=True)
+                subprocess.run(['git', 'init', '-q', str(repo)], check=True)
+                local = repo / '.opencode' / '.jira.env'
+                local.parent.mkdir()
+                (repo / '.git/info/exclude').write_text('/.opencode/.jira.env\n')
+                local.write_text('JIRA_BASE_URL=https://wrong.invalid\nJIRA_EMAIL=wrong\nJIRA_API_TOKEN=wrong\n')
+                local.chmod(0o600)
+            binding = home / 'secret' / '.env.jira'
+            binding.parent.mkdir(mode=0o700)
+            binding.write_text('JIRA_BASE_URL=https://jira.invalid\nJIRA_EMAIL=fixture@example.invalid\nJIRA_API_TOKEN=synthetic-token\n')
+            binding.chmod(0o600)
+            policy = home / 'jira-context-binding.json'
+            policy.write_text(json.dumps({'version': 1, 'scopeRoot': str(scope), 'credentialFile': str(binding)}))
+            policy.chmod(0o600)
+            with patch.object(api, 'JIRA_MANAGED_POLICY', policy), patch.dict(os.environ, {'JIRA_ENV_FILE': 'ignored'}, clear=True), \
+                 patch.object(api, 'build_context', return_value={'ok': True}) as context:
+                def invoke(repo, error=None):
+                    output = io.StringIO()
+                    with patch.object(api.Path, 'cwd', return_value=repo), redirect_stdout(output):
+                        result = api.main(['context', 'TEST-101'], managed=True)
+                    self.assertEqual(result, int(error is not None), output.getvalue())
+                    if error:
+                        self.assertIn(error, json.loads(output.getvalue())['error'])
+                for repo in repositories[:2]:
+                    invoke(repo)
+                    self.assertEqual(context.call_args.args[-3:], ('fixture@example.invalid', 'synthetic-token', 'https://jira.invalid'))
+                invoke(repositories[2], 'outside the organization workspace')
+                binding.chmod(0o644)
+                invoke(repositories[0], 'private directory')
+                binding.unlink()
+                invoke(repositories[0], 'missing; no fallback')
+                self.assertEqual(context.call_count, 2)
+
+    def test_jira_json_does_not_forward_authentication_to_redirects(self):
+        api = module('jira_redirect_context', ROOT / 'scripts/jira_api_read.py')
+        with patch.object(api.urllib.request, 'urlopen') as urlopen:
+            urlopen.return_value.__enter__.return_value.read.return_value = b'{}'
+            api.jira_json_get('/rest/api/3/issue/TEST-101', 'fixture', 'synthetic-token', 'https://jira.invalid')
+            request = urlopen.call_args.args[0]
+            self.assertIn('Authorization', request.unredirected_hdrs)
+            redirected = api.urllib.request.HTTPRedirectHandler().redirect_request(
+                request, None, 302, '', {}, 'https://other.invalid')
+            self.assertIsNone(redirected.get_header('Authorization'))
+
     def test_broker_writes_and_rereads_draft_updates_and_ready_without_network(self):
         core = ROOT.parent / 'opencode-stack/scripts/planner_shell.py'
         if not core.exists():

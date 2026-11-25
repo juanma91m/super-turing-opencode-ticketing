@@ -99,6 +99,21 @@ un verdict local no inicializa autenticación, no carga envs y no requiere Jira.
 Las operaciones remotas conservan su mecanismo aprobado de autenticación; no se
 preparan credenciales ni env files para demostrar handoff.
 
+En el perfil gestionado, `jira_helper.sh context` (directo para el review formal
+o por broker) obedece el binding organizacional si el owner instaló
+`scripts/jira-context-binding.json`: exige checkout dentro de su workspace y
+lee sólo la fuente externa declarada, sin fallback ni opciones de CLI/env para
+elegir otra cuenta. El archivo de credenciales y su directorio requieren
+`0600`/`0700`; no se copian al perfil. Fuera de un perfil organizacional, la
+configuración portable conserva `.opencode/.jira.env` de la raíz Git del checkout actual,
+también si se llama desde un subdirectorio. El operador configura ese archivo
+privado con `JIRA_BASE_URL`, `JIRA_EMAIL` y `JIRA_API_TOKEN` por su canal de
+secretos aprobado: conservarlo fuera de Git (exclusión local), con modo `0600`,
+sin enlaces. No hay fallback al `.env` de la aplicación ni a Rovo. El helper
+falla antes de usar la red si el archivo falta, no es seguro o está incompleto.
+No se cambia la allowlist ni se crean credenciales durante la composición.
+El binding organizacional sólo aplica a `context`, no concede otras operaciones.
+
 Tener un ID, abrir code review o instalar el addon **no activa** implementación
 ni handoff. Manda la política del proyecto y el pedido. La activación sigue siendo
 contrato de instrucciones/workflow, no una ACL nueva inventada por el port.

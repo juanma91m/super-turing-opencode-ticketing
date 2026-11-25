@@ -5,6 +5,8 @@ import json
 import os
 import shutil
 import re
+import stat
+import subprocess
 import sys
 import urllib.error
 import urllib.parse
@@ -29,6 +31,10 @@ DEFAULT_ISSUE_FIELDS = [
 ]
 TEXT_EXTENSIONS = {".txt", ".md", ".markdown", ".sql", ".json", ".csv", ".log", ".xml", ".yaml", ".yml"}
 MAX_AUTO_ATTACHMENT_BYTES = 5 * 1024 * 1024
+JIRA_KEYS = ('JIRA_BASE_URL', 'JIRA_EMAIL', 'JIRA_API_TOKEN')
+JIRA_PROJECT_BINDING = Path('.opencode/.jira.env')
+JIRA_MANAGED_POLICY = Path(__file__).resolve().with_name('jira-context-binding.json')
+MAX_JIRA_BINDING_BYTES = 16 * 1024
 
 
 def load_env_file(path: str) -> None:
@@ -48,6 +54,141 @@ def load_env_file(path: str) -> None:
             os.environ.setdefault(key.strip(), value)
 
 
+def managed_context_credentials():
+    # The managed helper owns source selection, not the model or inherited env.
+    cwd = Path.cwd().resolve()
+    git_env = {'PATH': os.defpath, 'GIT_CONFIG_GLOBAL': os.devnull, 'GIT_CONFIG_NOSYSTEM': '1',
+               'GIT_OPTIONAL_LOCKS': '0', 'GIT_TERMINAL_PROMPT': '0'}
+
+    def git(directory, *args):
+        return subprocess.run(['git', '-c', 'core.fsmonitor=false', *args], cwd=directory, env=git_env,
+                              capture_output=True, check=True, timeout=5).stdout
+
+    try:
+        root = Path(os.fsdecode(git(cwd, 'rev-parse', '--show-toplevel').removesuffix(b'\n')))
+        if not root.is_absolute() or root.resolve() != root or not cwd.is_relative_to(root):
+            raise ValueError
+    except (OSError, ValueError, subprocess.SubprocessError):
+        raise ValueError('Jira context requires a verified Git checkout') from None
+    binding = managed_organization_binding(root)
+    if binding is not None:
+        return parse_managed_credentials(read_organization_credentials(binding))
+    try:
+        tracked = git(root, 'ls-files', '-z', '--', str(JIRA_PROJECT_BINDING))
+    except (OSError, subprocess.SubprocessError):
+        raise ValueError('Jira context requires a verified Git checkout') from None
+    if tracked:
+        raise ValueError('Jira context refuses a credential file tracked by Git')
+
+    try:
+        directory = os.open(root / JIRA_PROJECT_BINDING.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            fd = os.open(JIRA_PROJECT_BINDING.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=directory)
+            with os.fdopen(fd, 'rb') as stream:
+                info = os.fstat(stream.fileno())
+                if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_uid != os.getuid()
+                        or info.st_mode & 0o077 or info.st_size > MAX_JIRA_BINDING_BYTES):
+                    raise ValueError('Jira project binding must be a private regular file (0600)')
+                try:
+                    git(root, 'check-ignore', '--quiet', '--', str(JIRA_PROJECT_BINDING))
+                except (OSError, subprocess.SubprocessError):
+                    raise ValueError('Jira project binding must be excluded from Git') from None
+                data = stream.read(MAX_JIRA_BINDING_BYTES + 1)
+        finally:
+            os.close(directory)
+    except FileNotFoundError:
+        raise ValueError('Jira project binding missing; configure the dedicated Ticketing credentials') from None
+    except OSError:
+        raise ValueError('Jira project binding must be a private regular file (0600), without symlinks') from None
+    return parse_managed_credentials(data)
+
+
+def managed_organization_binding(root: Path):
+    # Only the installed Ticketing/AUNE profile can select a shared binding.
+    # Neither the checkout, environment nor invocation arguments select it.
+    try:
+        fd = os.open(JIRA_MANAGED_POLICY, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    except FileNotFoundError:
+        return None
+    except OSError:
+        raise ValueError('Jira organization policy unavailable; no fallback') from None
+    try:
+        with os.fdopen(fd, 'rb') as stream:
+            info = os.fstat(stream.fileno())
+            if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_uid != os.getuid() or info.st_mode & 0o022:
+                raise ValueError
+            data = stream.read(MAX_JIRA_BINDING_BYTES + 1)
+            if len(data) > MAX_JIRA_BINDING_BYTES:
+                raise ValueError
+            policy = json.loads(data)
+        if not isinstance(policy, dict) or set(policy) != {'version', 'scopeRoot', 'credentialFile'} or policy['version'] != 1:
+            raise ValueError
+        scope, binding = Path(policy['scopeRoot']), Path(policy['credentialFile'])
+        if (not scope.is_absolute() or scope == scope.parent or scope.resolve() != scope
+                or not binding.is_absolute() or binding.is_relative_to(scope)):
+            raise ValueError
+    except (OSError, ValueError, TypeError, RuntimeError):
+        raise ValueError('Jira organization policy invalid; no fallback') from None
+    if not root.is_relative_to(scope):
+        raise ValueError('Jira context outside the organization workspace; no fallback')
+    return binding
+
+
+def read_organization_credentials(binding: Path):
+    try:
+        if binding.parent.resolve() != binding.parent:
+            raise ValueError
+        directory = os.open(binding.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            info = os.fstat(directory)
+            if info.st_uid != os.getuid() or stat.S_IMODE(info.st_mode) != 0o700:
+                raise ValueError
+            fd = os.open(binding.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=directory)
+            with os.fdopen(fd, 'rb') as stream:
+                info = os.fstat(stream.fileno())
+                if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_uid != os.getuid()
+                        or stat.S_IMODE(info.st_mode) != 0o600 or info.st_size > MAX_JIRA_BINDING_BYTES):
+                    raise ValueError
+                return stream.read(MAX_JIRA_BINDING_BYTES + 1)
+        finally:
+            os.close(directory)
+    except FileNotFoundError:
+        raise ValueError('Jira organization credentials missing; no fallback') from None
+    except (OSError, ValueError, RuntimeError):
+        raise ValueError('Jira organization credentials require a private directory (0700) and file (0600), without links') from None
+
+
+def parse_managed_credentials(data):
+    try:
+        if len(data) > MAX_JIRA_BINDING_BYTES or b'\x00' in data:
+            raise ValueError
+        values = {}
+        for line in data.decode('utf-8').splitlines():
+            line = line.strip()
+            if line.startswith('#') or '=' not in line:
+                continue
+            key, value = (part.strip() for part in line.split('=', 1))
+            if key not in JIRA_KEYS:
+                continue
+            if key in values:
+                raise ValueError
+            if len(value) >= 2 and value[0] in ('"', "'") and value[-1] == value[0]:
+                value = value[1:-1]
+            values[key] = value
+    except (UnicodeError, ValueError):
+        raise ValueError('Jira credential binding has invalid syntax') from None
+    if not all(values.get(key) for key in JIRA_KEYS):
+        raise ValueError('Jira credential binding incomplete; configure URL, email and API token')
+    try:
+        url = urllib.parse.urlsplit(values['JIRA_BASE_URL'])
+        if url.scheme != 'https' or not url.hostname or url.username is not None or url.query or url.fragment:
+            raise ValueError
+        _ = url.port
+    except ValueError:
+        raise ValueError('Jira credential binding requires an HTTPS base URL without embedded credentials') from None
+    return tuple(values[key] for key in JIRA_KEYS)
+
+
 def auth_headers(email: str, token: str, accept: str = "application/json"):
     auth = base64.b64encode(f"{email}:{token}".encode()).decode()
     return {
@@ -57,10 +198,12 @@ def auth_headers(email: str, token: str, accept: str = "application/json"):
 
 
 def jira_json_get(path: str, email: str, token: str, base_url: str):
+    headers = auth_headers(email, token)
     req = urllib.request.Request(
         f"{base_url.rstrip('/')}{path}",
-        headers=auth_headers(email, token),
+        headers={"Accept": headers["Accept"]},
     )
+    req.add_unredirected_header("Authorization", headers["Authorization"])
     with urllib.request.urlopen(req, timeout=30) as resp:
         return json.loads(resp.read().decode())
 
@@ -599,8 +742,9 @@ def parse_args(argv):
     return parser.parse_args(argv)
 
 
-def main(argv=None) -> int:
+def main(argv=None, *, managed=False) -> int:
     args = parse_args(argv or sys.argv[1:])
+    managed_context = managed and args.mode == 'context'
     try:
         # Workspace metadata is local and must work even when Jira is unavailable.
         # Do not load env files or initialize authentication for these operations.
@@ -618,11 +762,16 @@ def main(argv=None) -> int:
             print(json.dumps(payload, ensure_ascii=False, indent=2))
             return 0
 
-        env_file = os.environ.get("JIRA_ENV_FILE", os.path.join(os.getcwd(), ".env"))
-        load_env_file(env_file)
-        base_url = os.environ.get("JIRA_BASE_URL")
-        email = os.environ.get("JIRA_EMAIL")
-        token = os.environ.get("JIRA_API_TOKEN")
+        if managed_context:
+            try:
+                base_url, email, token = managed_context_credentials()
+            except ValueError as err:
+                print(json.dumps({'error': str(err)}))
+                return 1
+        else:
+            env_file = os.environ.get("JIRA_ENV_FILE", os.path.join(os.getcwd(), ".env"))
+            load_env_file(env_file)
+            base_url, email, token = (os.environ.get(key) for key in JIRA_KEYS)
         if not base_url or not email or not token:
             print(json.dumps({"error": "Missing Jira credentials in environment",
                               "required": ["JIRA_BASE_URL", "JIRA_EMAIL", "JIRA_API_TOKEN"]}, ensure_ascii=False))
@@ -704,13 +853,17 @@ def main(argv=None) -> int:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         return 0
     except urllib.error.HTTPError as err:
+        if managed_context:
+            print(json.dumps({'http_error': err.code}))
+            return 1
         body = err.read().decode(errors="ignore")
         print(json.dumps({"http_error": err.code, "body": body[:2000]}, ensure_ascii=False, indent=2))
         return 1
     except Exception as err:
-        print(json.dumps({"error": str(err)}, ensure_ascii=False, indent=2))
+        message = 'Jira context request failed; check the configured endpoint and connection' if managed_context else str(err)
+        print(json.dumps({'error': message}, ensure_ascii=False, indent=2))
         return 1
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(managed=os.environ.get('OPENCODE_TICKETING_HELPER') == 'managed-v2'))

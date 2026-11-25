@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Expose canonical non-agent assets and autonomy as data, never execute Jira."""
+import base64
 import importlib.util
 import json
 from pathlib import Path
@@ -13,6 +14,8 @@ try:
     options = json.load(sys.stdin)
     data = module.plan({'config': options['config'], 'agents': {}, 'mock': options.get('mock', False)})
     data['assets'] = [entry for entry in data['assets'] if not entry['path'].startswith('agents/')]
+    wrapper, = (entry for entry in data['assets'] if entry['path'] == 'scripts/jira_helper.sh')
+    wrapper['content_b64'] = base64.b64encode((root / 'jira-helper.sh').read_bytes()).decode()
     data['autonomy'] = module.autonomy.AGENT_RULES
     print(json.dumps(data))
 except Exception:

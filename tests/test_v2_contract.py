@@ -2,6 +2,8 @@ import base64
 import importlib.util
 import json
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -64,6 +66,25 @@ class V2ContractTests(unittest.TestCase):
             self.assertNotIn('atlassian-rovo_getJiraIssue: allow', result)
             self.assertIn('  edit: deny', result)
             self.assertIn('Keep me', result)
+
+    def test_managed_renderer_wires_the_installed_helper_without_legacy_fallback(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            subprocess.run(['git', 'init', '-q', str(root)], check=True)
+            config = root / 'profile'
+            rendered = subprocess.run([sys.executable, str(ROOT / 'v2/general-assets.py')],
+                                      input=json.dumps({'config': str(config)}), text=True, capture_output=True,
+                                      timeout=10, check=True)
+            for asset in json.loads(rendered.stdout)['assets']:
+                if asset['path'] in {'scripts/jira_helper.sh', 'scripts/jira_api_read.py'}:
+                    destination = config / asset['path']
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    destination.write_bytes(base64.b64decode(asset['content_b64']))
+            helper = config / 'scripts/jira_helper.sh'
+            result = subprocess.run(['bash', str(helper), 'context', 'TEST-101'], cwd=root,
+                                    capture_output=True, text=True, timeout=10)
+            self.assertEqual(result.returncode, 1)
+            self.assertIn('Jira project binding missing', json.loads(result.stdout)['error'])
 
 
 if __name__ == '__main__':
